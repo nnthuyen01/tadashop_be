@@ -16,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -59,6 +60,7 @@ public class BrandController {
 	MapValidationErrorService mapValidationErrorService;
 
 	// consumes là các kiểu dữ liệu được sử dụng cho phương thức.
+	@PreAuthorize("hasAuthority('admin:create')")
 	@PostMapping(value = "/admin/brand", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE,
 			MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
 
@@ -163,7 +165,7 @@ public class BrandController {
 
 		return new ResponseEntity<>("Brand with id " + id + " was deleted", HttpStatus.OK);
 	}
-
+	@PreAuthorize("hasAuthority('admin:update')")
 	@PatchMapping(value = "/brand/{id}", consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_FORM_URLENCODED_VALUE,
 			MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)

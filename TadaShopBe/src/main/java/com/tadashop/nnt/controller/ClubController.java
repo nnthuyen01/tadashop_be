@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,6 +25,7 @@ import com.tadashop.nnt.model.Club;
 import com.tadashop.nnt.service.ClubService;
 import com.tadashop.nnt.service.iplm.MapValidationErrorService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 @RestController
@@ -35,7 +37,7 @@ public class ClubController {
 	@Autowired
 	MapValidationErrorService mapValidationErrorService;
 	
-	
+	@PreAuthorize("hasAuthority('admin:create')")
 	@PostMapping("/admin/club")
 	public ResponseEntity<?> createClub(@Valid @RequestBody ClubDto dto,
 											BindingResult result) {
@@ -53,6 +55,7 @@ public class ClubController {
 		
 		return new ResponseEntity<>(dto, HttpStatus.CREATED);
 	}
+	@PreAuthorize("hasAuthority('admin:update')")
 	@PatchMapping("/admin/club/{id}")
 	public ResponseEntity<?> updateClub(@PathVariable("id") Long id, @RequestBody ClubDto dto) {
 		Club entity = new Club();

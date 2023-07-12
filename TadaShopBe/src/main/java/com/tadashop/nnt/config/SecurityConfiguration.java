@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.web.cors.CorsConfiguration;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +25,7 @@ import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.http.HttpMethod.PATCH;
 
 @Configuration
 @EnableWebSecurity
@@ -37,6 +39,7 @@ public class SecurityConfiguration {
 	@Bean
 	  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		
+		  http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues());
 		  http
 		  	.csrf().disable()
 	    	.authorizeHttpRequests()
@@ -58,6 +61,7 @@ public class SecurityConfiguration {
 		        .requestMatchers(GET, "/api/admin/**").hasAuthority(ADMIN_READ.name())
 		        .requestMatchers(POST, "/api/admin/**").hasAuthority(ADMIN_CREATE.name())
 		        .requestMatchers(PUT, "/api/admin/**").hasAuthority(ADMIN_UPDATE.name())
+		        .requestMatchers(PATCH, "/api/admin/**").hasAuthority(ADMIN_UPDATE.name())
 		        .requestMatchers(DELETE, "/api/admin/**").hasAuthority(ADMIN_DELETE.name())
 		    	
 		        .requestMatchers("/api/user/**").hasRole(USER.name())
