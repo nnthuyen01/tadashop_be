@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tadashop.nnt.dto.ProductBriefDto;
+import com.tadashop.nnt.dto.ProductDetailResp;
 import com.tadashop.nnt.dto.ProductDto;
 import com.tadashop.nnt.dto.ProductImageDto;
 import com.tadashop.nnt.exception.AppException;
@@ -23,10 +24,13 @@ import com.tadashop.nnt.model.Brand;
 import com.tadashop.nnt.model.Club;
 import com.tadashop.nnt.model.Product;
 import com.tadashop.nnt.model.ProductImage;
+import com.tadashop.nnt.model.Size;
 import com.tadashop.nnt.repository.ProductImageRepo;
 import com.tadashop.nnt.repository.ProductRepo;
+import com.tadashop.nnt.repository.SizeRepo;
 import com.tadashop.nnt.service.ProductService;
 import com.tadashop.nnt.service.filestorage.FileStorageService;
+
 
 
 
@@ -37,6 +41,9 @@ public class ProductIplm implements ProductService{
 	
 	@Autowired
 	private ProductImageRepo productImageRepository;
+	
+	@Autowired
+	private SizeRepo sizeRepo;
 	
 	@Autowired
 	private FileStorageService fileStorageService;
@@ -201,17 +208,38 @@ public class ProductIplm implements ProductService{
 			ProductImageDto imgDto = new ProductImageDto();
 			BeanUtils.copyProperties(item, imgDto);
 			return imgDto;
-		}).collect(Collectors.toList());
-		
+		}).collect(Collectors.toList());		
 		dto.setImages(images);
+		
 		ProductImageDto imageDto = new ProductImageDto();
 		BeanUtils.copyProperties(found.getImage(), imageDto);
 		dto.setImage(imageDto);
 		
 		return dto;
 	}
-	
-	
+
+	public ProductDetailResp findProductById(Long id) {
+		var found = productRepository.findById(id).orElseThrow(()->new AppException("Product with id " + id + " Not Found"));
+		
+		ProductDetailResp productDetailResp =new ProductDetailResp(); 
+		
+		List<Size> sizes = sizeRepo.findAllByProduct(found);
+		
+		BeanUtils.copyProperties(found, productDetailResp);
+		var images = found.getImages().stream().map(item->{
+			ProductImageDto imgDto = new ProductImageDto();
+			BeanUtils.copyProperties(item, imgDto);
+			return imgDto;
+		}).collect(Collectors.toList());
+		productDetailResp.setImages(images);
+		
+		ProductImageDto imageDto = new ProductImageDto();
+		BeanUtils.copyProperties(found.getImage(), imageDto);
+		productDetailResp.setImage(imageDto);
+		productDetailResp.setSizes(sizes);
+		
+		return productDetailResp;
+	}
 	
 	
 }

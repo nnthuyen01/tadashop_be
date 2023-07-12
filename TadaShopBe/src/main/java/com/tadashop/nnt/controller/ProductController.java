@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.tadashop.nnt.dto.ProductDetailResp;
 import com.tadashop.nnt.dto.ProductDto;
 import com.tadashop.nnt.dto.ProductImageDto;
 import com.tadashop.nnt.exception.FileStorageException;
@@ -32,6 +33,7 @@ import com.tadashop.nnt.service.ProductService;
 import com.tadashop.nnt.service.filestorage.FileStorageService;
 import com.tadashop.nnt.service.iplm.MapValidationErrorService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
@@ -100,10 +102,7 @@ public class ProductController {
 		return new ResponseEntity<>(dto, HttpStatus.CREATED);
 	}
 
-	@GetMapping("/product/{id}/getedit")
-	public ResponseEntity<?> getEditedProduct(@PathVariable Long id) {
-		return new ResponseEntity<>(productService.getEditedProductById(id), HttpStatus.OK);
-	}
+	
 
 	@GetMapping("/products/images/{filename:.+}")
 	public ResponseEntity<?> downloadFile(@PathVariable String filename, HttpServletRequest request) {
@@ -144,4 +143,20 @@ public class ProductController {
 		
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+	@GetMapping("/product/{id}/getedit")
+	public ResponseEntity<?> getEditedProduct(@PathVariable Long id) {
+		return new ResponseEntity<>(productService.getEditedProductById(id), HttpStatus.OK);
+	}
+	
+	@Operation(summary = "get product by ID")
+    @GetMapping("/product/detail/{id}")
+    public ResponseEntity<?> getProductById(@PathVariable Long id){
+        ProductDetailResp productResp = productService.findProductById(id);
+        if (productResp !=null){
+            return new ResponseEntity<>(productResp, HttpStatus.OK);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Not Found Product ID");
+//		return new ResponseEntity<>(productService.findProductById(id), HttpStatus.OK);
+    }
 }

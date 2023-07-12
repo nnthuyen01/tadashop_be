@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tadashop.nnt.utils.constant.ProductStatus;
 
 import jakarta.persistence.CascadeType;
@@ -66,6 +67,7 @@ public class Product extends AbstractEntity{
 	@Column(name ="status")
 	private ProductStatus status;
 	
+	@JsonIgnore
 	@OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
 	private List<Size> sizes;	
 	

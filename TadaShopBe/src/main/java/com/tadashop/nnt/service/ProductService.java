@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.tadashop.nnt.dto.ProductBriefDto;
+import com.tadashop.nnt.dto.ProductDetailResp;
 import com.tadashop.nnt.dto.ProductDto;
 
 public interface ProductService {
@@ -18,5 +19,5 @@ public interface ProductService {
 	
 	ProductDto getEditedProductById(Long id);
 	
-	
+	ProductDetailResp findProductById(Long id);
 }
