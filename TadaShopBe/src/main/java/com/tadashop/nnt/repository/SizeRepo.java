@@ -13,4 +13,6 @@ public interface SizeRepo extends JpaRepository<Size, Long>{
     List<Size> findAllByProduct(Product product);
     
     List<Size> findSizeByProductId(Long id);
+    
+    List<Size> findAllByIdIn(List<Long> productSizeId);
 }

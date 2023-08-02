@@ -44,13 +44,15 @@ public class OrderDetail extends AbstractEntity{
 	@Column(name ="disscount_code")
 	private String disscountCode;
 	
+	@Column(name ="price_off")
+	private Double priceOff;
+	
 	@OneToOne
     @JsonBackReference
     private Order order;
 	
-	@OneToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "payment_id")
-	@JsonManagedReference
 	private Payment payment;
 	
 	@ManyToOne(fetch = FetchType.LAZY)

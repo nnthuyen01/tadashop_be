@@ -101,7 +101,7 @@ public class AuthenticationIplm implements AuthenticationService {
 			var refreshToken = jwtService.generateRefreshToken(user);
 			revokeAllUserTokens(user);
 			saveUserToken(user, jwtToken);
-			return AuthenticationResponse.builder().accessToken(jwtToken).refreshToken(refreshToken).build();
+			return AuthenticationResponse.builder().accessToken(jwtToken).refreshToken(refreshToken).username(user.getUsername()).role(user.getRole()).build();
 		}
 	}
 

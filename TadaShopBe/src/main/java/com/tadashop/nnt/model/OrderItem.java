@@ -30,8 +30,8 @@ public class OrderItem extends AbstractEntity {
 	private Double price;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "product_id")
-	private Product product;
+	@JoinColumn(name = "size_id")
+	private Size size;
 
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)

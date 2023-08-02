@@ -1,6 +1,7 @@
 package com.tadashop.nnt.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.tadashop.nnt.utils.constant.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,4 +17,7 @@ public class AuthenticationResponse {
 	private String accessToken;
 	@JsonProperty("refresh_token")
 	private String refreshToken;
+	private String username;
+	private Role role;
+	
 }

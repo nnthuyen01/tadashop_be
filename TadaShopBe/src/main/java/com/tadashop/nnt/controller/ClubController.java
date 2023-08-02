@@ -84,6 +84,7 @@ public class ClubController {
 		return new ResponseEntity<>(clubService.findById(id), HttpStatus.OK);
 	}
 	
+	@PreAuthorize("hasAuthority('admin:delete')")
 	@DeleteMapping("/admin/club/{id}")
 	public ResponseEntity<?> deleteClub(@PathVariable("id") Long id){
 		clubService.deleteById(id);

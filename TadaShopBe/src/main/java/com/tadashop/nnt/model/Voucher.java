@@ -16,7 +16,7 @@ import lombok.Setter;
 @Table(name = "voucher")
 public class Voucher extends AbstractEntity{
 	@Column(name= "code")
-	private String name;
+	private String code;
 	
 	@Column(name= "price")
 	private Double price;
