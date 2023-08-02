@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.tadashop.nnt.dto.BrandDto;
 import com.tadashop.nnt.exception.AppException;
 import com.tadashop.nnt.model.Brand;
+import com.tadashop.nnt.model.Product;
 import com.tadashop.nnt.repository.BrandRepo;
 import com.tadashop.nnt.service.BrandService;
 import com.tadashop.nnt.service.filestorage.FileStorageService;
@@ -72,7 +73,16 @@ public class BrandIplm implements BrandService{
 
 		Brand existed = findById(id);
 		
-		brandRepository.delete(existed);
+		if (existed != null) {
+	        // Remove the reference to the brand from associated products
+	        for (Product product : existed.getProducts()) {
+	            product.setBrand(null);
+	        }
+
+	        // Now, you can safely delete the brand
+	        brandRepository.delete(existed);
+	    }
+//		brandRepository.delete(existed);z
 	}
 	
 	public Brand updateBrand(Long id, BrandDto dto) {

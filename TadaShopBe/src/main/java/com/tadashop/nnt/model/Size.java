@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -33,6 +34,6 @@ public class Size extends AbstractEntity{
     private Product product;
 	
     @JsonIgnore
-    @OneToMany(mappedBy = "size",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "size",fetch = FetchType.LAZY,  cascade = CascadeType.REMOVE)
     private List<OrderItem> orderItems;
 }

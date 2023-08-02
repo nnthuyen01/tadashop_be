@@ -11,6 +11,7 @@ import com.tadashop.nnt.utils.constant.ProductStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
@@ -71,11 +72,11 @@ public class Product extends AbstractEntity{
 	@OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
 	private List<Size> sizes;	
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "club_id")
 	private Club club;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "brand_id")
 	private Brand brand;
 	

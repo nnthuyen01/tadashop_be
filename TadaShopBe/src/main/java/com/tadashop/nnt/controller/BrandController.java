@@ -43,8 +43,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/api/")
+
 
 public class BrandController {
 	@Autowired
@@ -162,7 +162,6 @@ public class BrandController {
 		Optional<Brand> found= brandRepository.findById(id);
 		fileStorageService.deleteLogoFile(found.get().getLogo());
 		brandService.deleteId(id);
-
 		return new ResponseEntity<>("Brand with id " + id + " was deleted", HttpStatus.OK);
 	}
 	@PreAuthorize("hasAuthority('admin:update')")

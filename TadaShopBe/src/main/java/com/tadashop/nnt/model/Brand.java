@@ -1,7 +1,10 @@
 package com.tadashop.nnt.model;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,4 +25,6 @@ public class Brand extends AbstractEntity{
 	@Column(name = "logo", length = 80)
 	private String logo;
 
+	@OneToMany(mappedBy = "brand")
+    private List<Product> products;
 }
