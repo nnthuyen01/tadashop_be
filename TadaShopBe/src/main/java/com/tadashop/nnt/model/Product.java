@@ -42,8 +42,10 @@ public class Product extends AbstractEntity{
 	@Column(name = "price", nullable = false)
 	private Double price;
 	
-	@Column(name = "quantity", nullable = false)
-	private Integer quantity;
+//	@Column(name = "quantity", nullable = false)
+//	private Integer quantity;
+	@Column(name = "total_quantity")
+	private Integer totalQuantity = 0;
 
 	@Column(name = "is_featured")
 	private Boolean isFeatured;

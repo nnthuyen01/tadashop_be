@@ -21,8 +21,10 @@ public class ProductDto implements Serializable{
 	@Min(value = 0)
 	private Double price;
 	
-	@Min(value = 0)
-	private Integer quantity;
+//	@Min(value = 0)
+//	private Integer quantity;
+
+	private Integer totalQuantity;
 	
 	private Boolean isFeatured;
 	

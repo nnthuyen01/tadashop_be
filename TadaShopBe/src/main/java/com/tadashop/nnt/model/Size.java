@@ -28,6 +28,9 @@ public class Size extends AbstractEntity{
 	@Column(name = "size", nullable = false, length = 100)
 	private String size;
 	
+	@Column(name = "quantity", nullable = false)
+	private Integer quantity;
+	
 	@JsonIgnore
     @ManyToOne
     @JoinColumn(name = "product_id")

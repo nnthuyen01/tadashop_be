@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hibernate.cache.spi.support.AbstractReadWriteAccess.Item;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -52,12 +52,14 @@ public class ProductIplm implements ProductService{
 	public ProductDto insertProduct(ProductDto dto) {
 
 		Product entity = new Product();
-		
-		BeanUtils.copyProperties(dto, entity);
-		
+			
 //		if (dto.getName() != null) {
 //		    entity.setName(dto.getName());
 //		} 
+		dto.setTotalQuantity(entity.getTotalQuantity());
+		
+		BeanUtils.copyProperties(dto, entity);
+		
 		var club = new Club();
 		club.setId(dto.getClubId());
 		entity.setClub(club);
@@ -224,6 +226,14 @@ public class ProductIplm implements ProductService{
 		ProductDetailResp productDetailResp =new ProductDetailResp(); 
 		
 		List<Size> sizes = sizeRepo.findAllByProduct(found);
+		
+//		Integer tQuantity = 0;
+//		for (Size size : sizes ) {
+//			tQuantity += size.getQuantity();
+//		}
+//		productDetailResp.setTotalQuantity(tQuantity);
+		productDetailResp.setTotalQuantity(found.getTotalQuantity());
+		
 		
 		BeanUtils.copyProperties(found, productDetailResp);
 		var images = found.getImages().stream().map(item->{
