@@ -1,5 +1,7 @@
 package com.tadashop.nnt.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -20,4 +22,6 @@ public interface ProductService {
 	ProductDto getEditedProductById(Long id);
 	
 	ProductDetailResp findProductById(Long id);
+	
+	List<ProductBriefDto> getProducts();
 }

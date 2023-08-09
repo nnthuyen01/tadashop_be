@@ -101,6 +101,11 @@ public class ProductController {
 
 		return new ResponseEntity<>(dto, HttpStatus.CREATED);
 	}
+	
+	@GetMapping("/products/list")
+	public ResponseEntity<?> getProducts() {
+		return new ResponseEntity<>(productService.getProducts(), HttpStatus.OK);
+	}
 
 	
 
@@ -129,6 +134,7 @@ public class ProductController {
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"" + resource.getFilename() + "\"")
 				.body(resource);
 	}
+
 	
 	@DeleteMapping("/product/{id}")
 	public ResponseEntity<?> deleteProductById(@PathVariable Long id){

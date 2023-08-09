@@ -78,6 +78,7 @@ public class Product extends AbstractEntity{
 	@JoinColumn(name = "club_id")
 	private Club club;
 	
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "brand_id")
 	private Brand brand;

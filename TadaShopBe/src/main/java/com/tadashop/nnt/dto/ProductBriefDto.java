@@ -11,7 +11,7 @@ import lombok.Data;
 public class ProductBriefDto implements Serializable{
 	private Long id;
 	private String name;
-	private Integer quantity;	
+	private Integer totalQuantity;
 	private Double price;
 	private Float discount;
 	

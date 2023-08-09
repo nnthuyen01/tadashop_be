@@ -3,6 +3,7 @@ package com.tadashop.nnt.service.iplm;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -94,11 +95,16 @@ public class ProductIplm implements ProductService{
 		String ignoreFields[] = new String[]{"createdDate", "image",  "images", "viewCount"};
 		BeanUtils.copyProperties(dto,found ,ignoreFields);
 		
-		if(dto.getImage().getId() != null && found.getImage().getId()!=dto.getImage().getId()) {
+		ProductImage imgUpdate = new ProductImage();
+		BeanUtils.copyProperties(dto.getImage(), imgUpdate);
+		productImageRepository.save(imgUpdate);
+		System.out.print("INEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE" + dto.getImage().getId());
+//		if(dto.getImage().getId() != null && found.getImage().getId()!=dto.getImage().getId()) {
+			if(imgUpdate.getId() != null && found.getImage().getId()!=imgUpdate.getId()) {
 			fileStorageService.deleteProductImageFile(found.getImage().getFileName());
 			
 			ProductImage img = new ProductImage();
-			BeanUtils.copyProperties(dto.getImage(), img);
+			BeanUtils.copyProperties(imgUpdate, img);
 			
 			productImageRepository.save(img);
 			found.setImage(img);
@@ -127,6 +133,13 @@ public class ProductIplm implements ProductService{
 					productImageRepository.delete(item);
 				});
 			}
+			
+//			// Xóa tất cả các hình ảnh cũ
+//		    found.getImages().clear();
+		    // Lưu và thêm các hình ảnh mới
+		    Set<ProductImage> newImages = saveProductImages(dto); // Sử dụng phương thức saveProductImages bạn đã cung cấp
+		    found.getImages().addAll(newImages);
+			
 			
 			var imgList = dto.getImages().stream().map(item->{
 				ProductImage img = new ProductImage();
@@ -159,19 +172,57 @@ public class ProductIplm implements ProductService{
 		return newPage;
 	}
 	
+	public List<ProductBriefDto> getProducts(){
+		var list = productRepository.findAll();
+		var newList = list.stream().map(item->{
+			ProductBriefDto dto = new ProductBriefDto();
+			BeanUtils.copyProperties(item, dto);
+			
+			dto.setClubName(item.getClub().getName());
+			dto.setBrandName(item.getBrand().getName());
+			dto.setImageFileName(item.getImage().getFileName());
+			
+			return dto;
+		}).collect(Collectors.toList());
+		
+
+		
+		return newList;
+	}
+	
 	private Set<ProductImage> saveProductImages(ProductDto dto){
 		var entityList = new HashSet<ProductImage>();
 		
-		var newList = dto.getImages().stream().map(item->{
-			ProductImage img = new ProductImage();
-			BeanUtils.copyProperties(item, img);
-			
-			var savedImg = productImageRepository.save(img);
-			item.setId(savedImg.getId());
-			
-			entityList.add(savedImg);
-			return item;
-		}).collect(Collectors.toList());
+//		var newList = dto.getImages().stream().map(item->{
+//			ProductImage img = new ProductImage();
+//			BeanUtils.copyProperties(item, img);
+//			
+//			var savedImg = productImageRepository.save(img);
+//			item.setId(savedImg.getId());
+//			
+//			entityList.add(savedImg);
+//			return item;
+//		}).collect(Collectors.toList());
+		
+		var newList = dto.getImages().stream().map(item -> {
+	        // Kiểm tra xem hình ảnh đã tồn tại trong danh sách entityList chưa
+	        boolean isExisting = entityList.stream()
+	                .anyMatch(existingImage -> existingImage.getId() != null && existingImage.getId().equals(item.getId()));
+
+	        if (!isExisting) {
+	            ProductImage img = new ProductImage();
+	            BeanUtils.copyProperties(item, img);
+
+	            var savedImg = productImageRepository.save(img);
+	            item.setId(savedImg.getId());
+
+	            entityList.add(savedImg);
+	            return item;
+	        }
+	        
+	        return null; // Trả về null cho các hình ảnh đã tồn tại
+	    }).filter(Objects::nonNull) // Lọc ra các hình ảnh mới (không null)
+	      .collect(Collectors.toList());
 		
 		dto.setImages(newList);
 		return entityList;
