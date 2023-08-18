@@ -1,6 +1,15 @@
 package com.tadashop.nnt.controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,10 +22,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import com.tadashop.nnt.dto.BrandDto;
 import com.tadashop.nnt.dto.VoucherDto;
+import com.tadashop.nnt.model.Brand;
 import com.tadashop.nnt.model.Voucher;
 import com.tadashop.nnt.repository.VoucherRepo;
 import com.tadashop.nnt.service.VoucherService;
@@ -66,6 +77,22 @@ public class VoucherController {
 	@GetMapping("/vouchers")
 	public ResponseEntity<?> getVouchers(){
 		return new ResponseEntity<>(voucherService.getAllVouchers(), HttpStatus.OK);
+	}
+	
+	@GetMapping("/vouchers/find")
+	public ResponseEntity<?> getBrands(@RequestParam("query") String query, 
+			@PageableDefault(size = 2, sort = "code", direction = Sort.Direction.ASC) Pageable pageable ) {
+		Page<Voucher> list = voucherService.findByCode(query, pageable);
+		
+		List<VoucherDto> newList = list.getContent().stream().map(item -> {
+			VoucherDto dto = new VoucherDto();
+			BeanUtils.copyProperties(item, dto);
+			return dto;
+		}).collect(Collectors.toList());
+		
+		Page<VoucherDto> newPage =  new PageImpl<VoucherDto>(newList, pageable, list.getTotalElements());
+
+		return new ResponseEntity<>(newPage, HttpStatus.OK);
 	}
 	
 }

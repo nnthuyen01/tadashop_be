@@ -24,6 +24,7 @@ public interface AuthenticationService {
 	void saveVerificationTokenForUser(User user, String token);
 	
 	Verification SendToken(String email);
+	Verification ResendToken(String email);
 	
 	User findUserByEmail(String email);
 	

@@ -26,7 +26,7 @@ public class UserReq {
 	  private String email;
 	  @NotBlank(message = "Phone may not be blank")
 	  private String phone;
-	  @NotBlank(message = "User may not be blank")
+	  @NotBlank(message = "Username may not be blank")
 	  private String username;
 	  @NotBlank(message = "Password may not be blank")
 	  @Size(min = 6,max = 26,message = "min = 6 and max 26")

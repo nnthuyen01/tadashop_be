@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +24,7 @@ import com.tadashop.nnt.dto.AuthenticationResponse;
 import com.tadashop.nnt.dto.PasswordDto;
 import com.tadashop.nnt.dto.UserReq;
 import com.tadashop.nnt.model.User;
+import com.tadashop.nnt.model.Verification;
 import com.tadashop.nnt.service.AuthenticationService;
 import com.tadashop.nnt.service.email.EmailSenderService;
 import com.tadashop.nnt.service.iplm.MapValidationErrorService;
@@ -76,19 +78,41 @@ public class AuthenticationController {
 		model.put("title", TITLE_SUBJECT_EMAIL);
 		model.put("subject", TITLE_SUBJECT_EMAIL);
 		model.put("type_of_action", TYPE_REGIS);
-		
+
 		emailSenderService.sendEmail(userReq.getEmail(), model, EmailType.REGISTER);
 
 		return new ResponseEntity<>(userReq, HttpStatus.CREATED);
+	}
+
+	@GetMapping("/resendVerifyToken")
+	public ResponseEntity<?> resendVerificationToken(@RequestParam("email") String email)
+			throws MessagingException, TemplateException, IOException {
+		Verification verificationToken = service.ResendToken(email);
+		Map<String, Object> model = new HashMap<>();
+		model.put("token", verificationToken.getToken());
+		model.put("title", TITLE_SUBJECT_EMAIL);
+		model.put("subject", TITLE_SUBJECT_EMAIL);
+		model.put("type_of_action", TYPE_REGIS);
+		emailSenderService.sendEmail(email, model, EmailType.REGISTER);
+
+		return new ResponseEntity<>("Đã gửi lại mã xác nhận vào email", HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/verifyRegistration", method = RequestMethod.GET)
 	public ResponseEntity<?> verifyRegistration(@RequestParam("token") String token,
 			@RequestParam("email") String email) {
 		String result = service.validateVerificationToken(token, email);
-		if (!result.equals("valid")) {
+//		if (!result.equals("valid")) {
+//			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//		}
+		if (result.equals("invalid")) {
+			return new ResponseEntity<>("incorrect token", HttpStatus.OK);
+		} else if (result.equals("expired")) {
+			return new ResponseEntity<>("token expires", HttpStatus.OK);
+		} else if (!result.equals("valid")) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
+
 		return ResponseEntity.ok(result);
 	}
 
@@ -123,7 +147,7 @@ public class AuthenticationController {
 			model.put("title", RESET_PASSWORD_TOKEN);
 			model.put("subject", RESET_PASSWORD_TOKEN);
 			model.put("type_of_action", TYPE_RESET);
-			
+
 			// Send email
 			emailSenderService.sendEmail(user.getEmail(), model, EmailType.REGISTER);
 			log.info("Reset password: {}", token);
@@ -142,27 +166,26 @@ public class AuthenticationController {
 		if (!result.getEnable()) {
 			return ResponseEntity.ok().body("Email not verify");
 		}
-		if(!service.checkIfValidOldPassword(result,passwordDTO.getOldPassword())) {
-            return ResponseEntity.badRequest().body("Invalid Old Password");
-        }		
+		if (!service.checkIfValidOldPassword(result, passwordDTO.getOldPassword())) {
+			return ResponseEntity.badRequest().body("Invalid Old Password");
+		}
 		service.changePassword(result, passwordDTO.getNewPassword());
 		return ResponseEntity.ok().body("Change password successfully");
 	}
 
-    @PutMapping("/changePassword")
-    public ResponseEntity<?> changePassword(@Valid @RequestBody PasswordDto passwordDTO){
-        User user = service.findUserByEmail(passwordDTO.getEmail());
-        if(!service.checkIfValidOldPassword(user,passwordDTO.getOldPassword())) {
-            return ResponseEntity.badRequest().body("Invalid Old Password");
-        }
-        if(service.checkIfValidOldPassword(user,passwordDTO.getNewPassword())) {
-            return ResponseEntity.badRequest().body("The new password is the same as the old password");
-        }
-        //Save New Password
-        service.changePassword(user, passwordDTO.getNewPassword());
-        return ResponseEntity.ok().body("Password Changed Successfully");
-    }
-
+	@PutMapping("/changePassword")
+	public ResponseEntity<?> changePassword(@Valid @RequestBody PasswordDto passwordDTO) {
+		User user = service.findUserByEmail(passwordDTO.getEmail());
+		if (!service.checkIfValidOldPassword(user, passwordDTO.getOldPassword())) {
+			return ResponseEntity.badRequest().body("Invalid Old Password");
+		}
+		if (service.checkIfValidOldPassword(user, passwordDTO.getNewPassword())) {
+			return ResponseEntity.badRequest().body("The new password is the same as the old password");
+		}
+		// Save New Password
+		service.changePassword(user, passwordDTO.getNewPassword());
+		return ResponseEntity.ok().body("Password Changed Successfully");
+	}
 
 	@PostMapping("/refresh-token")
 	public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {

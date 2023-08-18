@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Verification extends AbstractEntity implements Serializable {
-	private static final int EXPIRATION_TIME = 10;
+	private static final int EXPIRATION_TIME = 5;
 	
 	@OneToOne
 	@JoinColumn(name = "user_id")

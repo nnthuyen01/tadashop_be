@@ -5,10 +5,13 @@ import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.tadashop.nnt.dto.VoucherDto;
 import com.tadashop.nnt.exception.AppException;
+import com.tadashop.nnt.model.Brand;
 import com.tadashop.nnt.model.Club;
 import com.tadashop.nnt.model.Voucher;
 import com.tadashop.nnt.repository.VoucherRepo;
@@ -62,5 +65,9 @@ public class VoucherIplm implements VoucherService{
 	}
 	public List<Voucher> getAllVouchers(){
 		return voucherRepo.findAll();
+	}
+	
+	public Page<Voucher> findByCode(String code,Pageable pageable) {
+		return voucherRepo.findByCodeContainsIgnoreCase(code, pageable);
 	}
 }

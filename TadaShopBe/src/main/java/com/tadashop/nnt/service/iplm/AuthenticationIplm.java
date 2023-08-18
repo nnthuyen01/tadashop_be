@@ -148,8 +148,25 @@ public class AuthenticationIplm implements AuthenticationService {
 			verificationToken.setToken(token);
 			verificationRepo.save(verificationToken);
 			return verificationToken;
-		}
+		}				
 		return null;
+	}
+	public Verification ResendToken(String email) {
+		Verification verificationToken = verificationRepo.findVerificationTokenByUserEmail(email);
+		if (verificationToken != null) {
+			String token = RandomStringUtils.randomAlphanumeric(6).toUpperCase();
+			verificationToken.setToken(token);
+			verificationRepo.save(verificationToken);
+			return verificationToken;
+		} else {
+			Optional<User> user = repository.findByEmail(email);
+			User userEmail = user.get();
+			String token = RandomStringUtils.randomAlphanumeric(6).toUpperCase();
+		    verificationToken = new Verification(userEmail, token);
+		    
+			verificationRepo.save(verificationToken);
+			return verificationToken;
+		}
 	}
 
 	public User findUserByEmail(String email) {
