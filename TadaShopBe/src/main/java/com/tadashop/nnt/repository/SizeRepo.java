@@ -18,4 +18,5 @@ public interface SizeRepo extends JpaRepository<Size, Long>{
     List<Size> findAllByIdIn(List<Long> productSizeId);
     
 	List<Size> findBySizeContainsIgnoreCaseAndProduct(String size, Product product);
+	List<Size> findBySizeAndProduct(String size, Product product);
 }

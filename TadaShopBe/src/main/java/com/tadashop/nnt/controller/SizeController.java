@@ -78,6 +78,13 @@ public class SizeController {
 
 		return new ResponseEntity<>(sizeService.getSizeById(id), HttpStatus.OK);
 	}
+	
+	// Get All payment
+	@GetMapping("/size/all")
+	public ResponseEntity<?> findAll() {
+		return new ResponseEntity<>(sizeService.findAll(), HttpStatus.OK);
+	}
+	
 	@GetMapping("/size/all/{id}")
 	public ResponseEntity<?> getSizesByIdProduct(@PathVariable Long id) {
 

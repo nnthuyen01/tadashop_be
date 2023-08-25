@@ -171,7 +171,16 @@ public class AuthenticationIplm implements AuthenticationService {
 
 	public User findUserByEmail(String email) {
 		var user = repository.findByEmail(email);
-		return user.get();
+//		return user.get();
+		if (user.isPresent()) {
+	        return user.get();
+	    } else {
+	        // Xử lý trường hợp không tìm thấy người dùng cho địa chỉ email đã cho
+	        // Bạn có thể ném ra một ngoại lệ, trả về một người dùng mặc định hoặc trả về null, phụ thuộc vào trường hợp sử dụng của bạn.
+	        // Ví dụ:
+//	        throw new NoSuchElementException("Không tìm thấy người dùng cho email: " + email);
+	    	return null;
+	    }
 	}
 
 	public User validatePasswordResetToken(String token, String email) {
@@ -184,7 +193,7 @@ public class AuthenticationIplm implements AuthenticationService {
 		Calendar cal = Calendar.getInstance();
 
 		if ((verificationToken.getExpirationTime().getTime() - cal.getTime().getTime()) <= 0) {
-			verificationRepo.delete(verificationToken);
+//			verificationRepo.delete(verificationToken);
 			return null;
 		}
 		User user = verificationToken.getUser();

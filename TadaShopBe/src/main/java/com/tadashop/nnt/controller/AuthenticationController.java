@@ -166,9 +166,6 @@ public class AuthenticationController {
 		if (!result.getEnable()) {
 			return ResponseEntity.ok().body("Email not verify");
 		}
-		if (!service.checkIfValidOldPassword(result, passwordDTO.getOldPassword())) {
-			return ResponseEntity.badRequest().body("Invalid Old Password");
-		}
 		service.changePassword(result, passwordDTO.getNewPassword());
 		return ResponseEntity.ok().body("Change password successfully");
 	}

@@ -1,14 +1,18 @@
 package com.tadashop.nnt.service.iplm;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.tadashop.nnt.dto.ProductBriefDto;
 import com.tadashop.nnt.dto.SizeDto;
+import com.tadashop.nnt.dto.SizeResp;
 import com.tadashop.nnt.exception.AppException;
 import com.tadashop.nnt.model.Size;
+import com.tadashop.nnt.model.Payment;
 import com.tadashop.nnt.model.Product;
 import com.tadashop.nnt.repository.ProductRepo;
 import com.tadashop.nnt.repository.SizeRepo;
@@ -28,9 +32,10 @@ public class SizeIplm implements SizeService{
     	
     	
     	var productCheck = productRepo.findById(dto.getProductId());
-		List<?> foundedList = sizeRepo.findBySizeContainsIgnoreCaseAndProduct(dto.getSize(), productCheck.get());
-		
+//		List<?> foundedList = sizeRepo.findBySizeContainsIgnoreCaseAndProduct(dto.getSize(), productCheck.get());
+		List<?> foundedList = sizeRepo.findBySizeAndProduct(dto.getSize(), productCheck.get());
 		if (foundedList.size() > 0) {
+			System.out.println(foundedList.size());
 			throw new AppException("Size name is existed");
 		}
     	
@@ -57,7 +62,8 @@ public class SizeIplm implements SizeService{
     	
     	
     	var productCheck = productRepo.findById(dto.getProductId());
-		List<?> foundedList = sizeRepo.findBySizeContainsIgnoreCaseAndProduct(dto.getSize(), productCheck.get());
+//		List<?> foundedList = sizeRepo.findBySizeContainsIgnoreCaseAndProduct(dto.getSize(), productCheck.get());
+		List<?> foundedList = sizeRepo.findBySizeAndProduct(dto.getSize(), productCheck.get());
 		
 		if (foundedList.size() >= 1 && !found.getSize().equals(dto.getSize())) {
 			throw new AppException("Size name is existed");
@@ -91,11 +97,16 @@ public class SizeIplm implements SizeService{
     }
 
     public void deleteSizeById(Long id) {
-        var check = sizeRepo.existsById(id);
+        var check = sizeRepo.existsById(id);        
         if (!check)
             throw new AppException("Size ID not found");
 
         try {
+        	var found = sizeRepo.findById(id);
+        	var productCheck = productRepo.findById(found.get().getProduct().getId());
+        	Integer temp = productCheck.get().getTotalQuantity() - found.get().getQuantity();
+        	productCheck.get().setTotalQuantity(temp);
+        	productRepo.save(productCheck.get());
             sizeRepo.deleteById(id);
         }catch (Exception e){
             throw new AppException("Can't delete because have order for this product ID");
@@ -110,6 +121,19 @@ public class SizeIplm implements SizeService{
         Size size = check.get();
         return size;
     }
+    
+    @Override
+    public List<SizeResp> findAll() {
+        var list = sizeRepo.findAll();
+        var newList = list.stream().map(item->{
+        	SizeResp dto = new SizeResp();
+			BeanUtils.copyProperties(item, dto);		
+			dto.setProductId(item.getProduct().getId());	
+			return dto;
+		}).collect(Collectors.toList());
+		return newList;
+	}
+
     
     public List<Size> findAllSizeByProduct(Long id){
     	var check = productRepo.existsById(id);
