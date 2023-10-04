@@ -26,16 +26,22 @@ public class FileStorageService {
 	
 	private final Path fileProductImageStorageLocation;
 	
+	private final Path fileAvatarStorageLocation;
+	
 	public FileStorageService(FileStorageProperties fileStorageProperties) {
 		this.fileLogoStorageLocation = Paths.get(fileStorageProperties.getUploadLogoDir())
 				.toAbsolutePath().normalize();
 		this.fileProductImageStorageLocation = Paths.get(fileStorageProperties.getUploadProductImageDir())
+				.toAbsolutePath().normalize();
+		this.fileAvatarStorageLocation = Paths.get(fileStorageProperties.getUploadAvatarDir())
 				.toAbsolutePath().normalize();
 		
 		try {
 			Files.createDirectories(fileLogoStorageLocation);
 
 			Files.createDirectories(fileProductImageStorageLocation);
+			
+			Files.createDirectories(fileAvatarStorageLocation);
 		}
 		catch ( Exception ex) {
 			throw new FileStorageException("Cound not create the directory where the uploaded files will be stored", ex);
@@ -50,6 +56,10 @@ public class FileStorageService {
 	
 	public String storeProductImageFile(MultipartFile file) {
 		return storeFile(fileProductImageStorageLocation, file);
+	}
+	
+	public String storeAvatarFile(MultipartFile file) {
+		return storeFile(fileAvatarStorageLocation, file);
 	}
 	
 	public UploadedFileInfo storeUploadedProductImageFile(MultipartFile file) {
@@ -124,6 +134,9 @@ public class FileStorageService {
 	public Resource loadLogoProductImageFileAsResource(String filename) {
 		return loadFileAsResoure(fileProductImageStorageLocation, filename);
 	}
+	public Resource loadAvatarFileAsResource(String filename) {
+		return loadFileAsResoure(fileAvatarStorageLocation, filename);
+	}
 	
 //	Doc file duoc luu tru phia server va tra ve duoi dang resoure
 	private Resource loadFileAsResoure(Path location, String filename) {
@@ -143,6 +156,7 @@ public class FileStorageService {
 		}
 	}
 	
+// Delete
 	
 	public void deleteLogoFile(String filename) {
 		deleteFile(fileLogoStorageLocation, filename);
@@ -150,6 +164,9 @@ public class FileStorageService {
 	
 	public void deleteProductImageFile(String filename) {
 		deleteFile(fileProductImageStorageLocation, filename);
+	}
+	public void deleteAvatarFile(String filename) {
+		deleteFile(fileAvatarStorageLocation, filename);
 	}
 	
 //	Xoa file

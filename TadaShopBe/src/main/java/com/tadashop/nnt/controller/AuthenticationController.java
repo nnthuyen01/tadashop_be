@@ -3,6 +3,7 @@ package com.tadashop.nnt.controller;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,12 @@ import com.tadashop.nnt.dto.PasswordDto;
 import com.tadashop.nnt.dto.UserReq;
 import com.tadashop.nnt.model.User;
 import com.tadashop.nnt.model.Verification;
+import com.tadashop.nnt.repository.BrandRepo;
+import com.tadashop.nnt.repository.UserRepo;
 import com.tadashop.nnt.service.AuthenticationService;
 import com.tadashop.nnt.service.email.EmailSenderService;
 import com.tadashop.nnt.service.iplm.MapValidationErrorService;
+import com.tadashop.nnt.utils.Utils;
 import com.tadashop.nnt.utils.constant.EmailType;
 
 import freemarker.template.TemplateException;
@@ -47,6 +51,9 @@ public class AuthenticationController {
 
 	private final AuthenticationService service;
 	private final EmailSenderService emailSenderService;
+	
+	@Autowired
+	private UserRepo repository;
 
 	final String TITLE_SUBJECT_EMAIL = "TADA Register TOKEN";
 	final String TYPE_REGIS = "confirm registration code";
@@ -172,7 +179,10 @@ public class AuthenticationController {
 
 	@PutMapping("/changePassword")
 	public ResponseEntity<?> changePassword(@Valid @RequestBody PasswordDto passwordDTO) {
-		User user = service.findUserByEmail(passwordDTO.getEmail());
+		Long userId = Utils.getIdCurrentUser();
+		User user = repository.getReferenceById(userId);		
+		
+//		User user = service.findUserByEmail(passwordDTO.getEmail());	
 		if (!service.checkIfValidOldPassword(user, passwordDTO.getOldPassword())) {
 			return ResponseEntity.badRequest().body("Invalid Old Password");
 		}

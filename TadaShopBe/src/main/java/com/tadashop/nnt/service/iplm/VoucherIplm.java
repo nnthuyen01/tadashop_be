@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 
 import com.tadashop.nnt.dto.VoucherDto;
 import com.tadashop.nnt.exception.AppException;
-import com.tadashop.nnt.model.Brand;
-import com.tadashop.nnt.model.Club;
 import com.tadashop.nnt.model.Voucher;
 import com.tadashop.nnt.repository.VoucherRepo;
 import com.tadashop.nnt.service.VoucherService;

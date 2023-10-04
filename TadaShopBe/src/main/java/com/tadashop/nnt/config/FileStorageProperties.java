@@ -15,4 +15,6 @@ public class FileStorageProperties {
 	
 	private String uploadProductImageDir;
 	
+	private String uploadAvatarDir;
+	
 }
