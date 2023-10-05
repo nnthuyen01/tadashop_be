@@ -3,6 +3,7 @@ package com.tadashop.nnt.service.iplm;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.tadashop.nnt.dto.VoucherDto;
 import com.tadashop.nnt.exception.AppException;
+import com.tadashop.nnt.model.Club;
+import com.tadashop.nnt.model.User;
 import com.tadashop.nnt.model.Voucher;
 import com.tadashop.nnt.repository.VoucherRepo;
 import com.tadashop.nnt.service.VoucherService;
@@ -20,13 +23,27 @@ public class VoucherIplm implements VoucherService{
 	@Autowired
 	VoucherRepo voucherRepo;
 	
-	public Voucher createVoucher(VoucherDto dto) {
-		List<Voucher> checkList = voucherRepo.findVouchersByCode(dto.getCode());
-		if (checkList.size() > 0) {
-			throw new AppException("Voucher with this code already used" );
-		}
+//	public Voucher createVoucher(VoucherDto dto) {
+//		List<Voucher> checkList = voucherRepo.findVouchersByCode(dto.getCode());
+//		if (checkList.size() > 0) {
+//			throw new AppException("Voucher with this code already used" );
+//		}
+//		Voucher voucher = new Voucher();
+//		BeanUtils.copyProperties(dto, voucher);
+//		return voucherRepo.save(voucher);
+//	}
+	public Voucher createVoucher(VoucherDto dto) {	
 		Voucher voucher = new Voucher();
 		BeanUtils.copyProperties(dto, voucher);
+		
+		var user = new User();
+		user.setId(dto.getUserId());
+		voucher.setUser(user);
+		
+		String randomPart = RandomStringUtils.randomAlphanumeric(4).toUpperCase();
+	    String code = "TADA" + randomPart;
+		voucher.setVoucher(code);
+		
 		return voucherRepo.save(voucher);
 	}
 	
@@ -39,8 +56,7 @@ public class VoucherIplm implements VoucherService{
 
 		try {
 			Voucher existedVoucher = existed.get();
-			existedVoucher.setCode(dto.getCode());
-			existedVoucher.setPrice(dto.getPrice());
+			existedVoucher.setPriceOffPercent(dto.getPriceOffPercent());
 			existedVoucher.setStatus(dto.getStatus());
 			return voucherRepo.save(existedVoucher);
 		} catch (Exception ex) {

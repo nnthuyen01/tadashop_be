@@ -55,7 +55,7 @@ public class OrderDetail extends AbstractEntity{
 	@JoinColumn(name = "payment_id")
 	private Payment payment;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "voucher_id", nullable = true)
-	private Voucher voucher;
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	@JoinColumn(name = "voucher_id", nullable = true)
+//	private Voucher voucher;
 }

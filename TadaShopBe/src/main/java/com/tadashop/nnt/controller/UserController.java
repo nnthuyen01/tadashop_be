@@ -2,6 +2,7 @@ package com.tadashop.nnt.controller;
 
 import java.io.IOException;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.tadashop.nnt.dto.UpdateUserReq;
+import com.tadashop.nnt.dto.UserResp;
 import com.tadashop.nnt.exception.FileStorageException;
 import com.tadashop.nnt.model.User;
 import com.tadashop.nnt.service.UserService;
@@ -39,7 +41,9 @@ public class UserController {
 	@GetMapping("/user")
 	public ResponseEntity<?> getUser() {
 		User user = userService.getCurrentUser();
-		return new ResponseEntity<>(user, HttpStatus.OK);
+		UserResp resp = new UserResp();
+		BeanUtils.copyProperties(user, resp);
+		return new ResponseEntity<>(resp, HttpStatus.OK);
 	}
 
 	@PutMapping("/user")

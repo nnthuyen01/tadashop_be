@@ -48,9 +48,9 @@ public class VoucherController {
 
 		entity = voucherService.createVoucher(dto);
 		
-		dto.setId(entity.getId());
+//		dto.setId(entity.getId());
 		
-		return new ResponseEntity<>(dto, HttpStatus.CREATED);
+		return new ResponseEntity<>(entity, HttpStatus.CREATED);
 	}
 	
 	@PreAuthorize("hasAuthority('admin:update')")
@@ -59,9 +59,9 @@ public class VoucherController {
 		Voucher entity = new Voucher();
 		entity = voucherService.updateVoucher(dto);
 		
-		dto.setId(entity.getId());
+//		dto.setId(entity.getId());
 		
-		return new ResponseEntity<>(dto, HttpStatus.CREATED);
+		return new ResponseEntity<>(entity, HttpStatus.CREATED);
 	}
 	@GetMapping("/voucher/{id}/get")
 	public ResponseEntity<?> getVouchers(@PathVariable("id") Long id){

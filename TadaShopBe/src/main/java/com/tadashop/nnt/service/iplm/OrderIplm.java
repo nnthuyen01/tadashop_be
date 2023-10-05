@@ -79,14 +79,14 @@ public class OrderIplm implements OrderService {
 		orderDetail.setReceiverPhone(orderReq.getDifferentReceiverPhone());
 		
 
-		Voucher voucher = voucherRepo.findByCode(orderReq.getDiscountCode());
-		if (voucher != null) {
-			orderDetail.setDisscountCode(orderReq.getDiscountCode());
-			orderDetail.setVoucher(voucher);
-			orderDetail.setPriceOff(voucher.getPrice());
-		} else {
-			orderDetail.setPriceOff(Double.valueOf(0));
-		}
+//		Voucher voucher = voucherRepo.findByCode(orderReq.getDiscountCode());
+//		if (voucher != null) {
+//			orderDetail.setDisscountCode(orderReq.getDiscountCode());
+//			orderDetail.setVoucher(voucher);
+//			orderDetail.setPriceOff(voucher.getPrice());
+//		} else {
+//			orderDetail.setPriceOff(Double.valueOf(0));
+//		}
 
 //		Payment payment = paymentRepo.getReferenceById(orderReq.getId_payment());
 		Payment payment = paymentRepo.findByName(orderReq.getPaymentMethod());

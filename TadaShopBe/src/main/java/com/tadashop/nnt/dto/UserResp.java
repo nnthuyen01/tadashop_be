@@ -1,5 +1,8 @@
 package com.tadashop.nnt.dto;
 
+import java.util.List;
+
+import com.tadashop.nnt.model.Voucher;
 import com.tadashop.nnt.utils.constant.Role;
 
 import lombok.Data;
@@ -7,6 +10,7 @@ import lombok.Data;
 @Data
 public class UserResp {
 	private Long id;
+	private String username;
 	private String firstname;
 	private String lastname;
 	private String email;
@@ -14,4 +18,5 @@ public class UserResp {
 	private String avatar;
 	private Role role;
 	private Boolean enable;
+	private List<Voucher> vouchers;
 }
