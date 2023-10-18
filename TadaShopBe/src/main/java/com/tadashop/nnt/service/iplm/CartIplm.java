@@ -35,8 +35,7 @@ public class CartIplm implements CartService {
 
 	@Override
 	public void save(Long sizeId, int quantity) {
-//		String id = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-//		CartDto cartDto = new CartDto(new CartID(sizeId, Long.valueOf(id)), quantity);
+
 		Long userId = Utils.getIdCurrentUser();
 		CartDto cartDto = new CartDto(new CartID(sizeId, userId), quantity);
 		update(cartDto);
@@ -47,8 +46,7 @@ public class CartIplm implements CartService {
 				cartDto.getCartID().getProductSizeId());
 
 		if (updatedCart == null) {
-//			BeanUtils.copyProperties(cartDto, Cart.class);
-//			cartRepo.save(updatedCart);
+
 			Cart newCart = new Cart();
 			BeanUtils.copyProperties(cartDto, newCart);
 			cartRepo.save(newCart);

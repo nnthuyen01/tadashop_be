@@ -16,6 +16,7 @@ public class UserResp {
 	private String email;
 	private String phone;
 	private String avatar;
+	private Double amountPaid;
 	private Role role;
 	private Boolean enable;
 	private List<Voucher> vouchers;

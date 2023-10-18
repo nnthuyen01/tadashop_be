@@ -6,6 +6,8 @@ import java.util.List;
 import com.tadashop.nnt.model.Brand;
 import com.tadashop.nnt.model.Club;
 import com.tadashop.nnt.model.Size;
+import com.tadashop.nnt.utils.constant.ProductGender;
+import com.tadashop.nnt.utils.constant.ProductKitType;
 import com.tadashop.nnt.utils.constant.ProductStatus;
 
 
@@ -23,6 +25,9 @@ public class ProductDetailResp implements Serializable{
 	private Float discount;
 	private String brief;
 	private String description;
+	private ProductGender gender;
+	private ProductKitType kitType;
+	private String season;
 	private ProductStatus status; 
 	private List<ProductImageDto> images;
 	private List<Size> sizes;

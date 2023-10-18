@@ -3,6 +3,8 @@ package com.tadashop.nnt.dto;
 import java.io.Serializable;
 import java.util.List;
 
+import com.tadashop.nnt.utils.constant.ProductGender;
+import com.tadashop.nnt.utils.constant.ProductKitType;
 import com.tadashop.nnt.utils.constant.ProductStatus;
 
 import jakarta.validation.constraints.Max;
@@ -36,6 +38,9 @@ public class ProductDto implements Serializable{
 	private String brief;
 	private String description;
 
+	private ProductGender gender;
+	private ProductKitType kitType;
+	private String season;
 	private ProductStatus status; 
 	
 	private Long clubId;

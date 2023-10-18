@@ -60,7 +60,7 @@ public class AuthenticationIplm implements AuthenticationService {
 
 		var user = User.builder(). firstname(userReq.getFirstname()).lastname(userReq.getLastname())
 				.email(userReq.getEmail()).phone(userReq.getPhone()).username(userReq.getUsername())
-				.password(passwordEncoder.encode(userReq.getPassword())).role(Role.USER).enable(false).build();
+				.password(passwordEncoder.encode(userReq.getPassword())).role(Role.USER).amountPaid(0.0).enable(false).build();
 
 //        users.getAddresses().add(new Address(null,userReq.getAddress(),true,users));
 
@@ -81,7 +81,7 @@ public class AuthenticationIplm implements AuthenticationService {
 
 		var user = User.builder().firstname(userReq.getFirstname()).lastname(userReq.getLastname())
 				.email(userReq.getEmail()).phone(userReq.getPhone()).username(userReq.getUsername())
-				.password(passwordEncoder.encode(userReq.getPassword())).role(Role.ADMIN).enable(true).build();
+				.password(passwordEncoder.encode(userReq.getPassword())).role(Role.ADMIN).amountPaid(0.0).enable(true).build();
 		return repository.save(user);
 	}
 

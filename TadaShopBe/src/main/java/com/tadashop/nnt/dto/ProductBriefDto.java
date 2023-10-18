@@ -3,6 +3,8 @@ package com.tadashop.nnt.dto;
 
 import java.io.Serializable;
 
+import com.tadashop.nnt.utils.constant.ProductGender;
+import com.tadashop.nnt.utils.constant.ProductKitType;
 import com.tadashop.nnt.utils.constant.ProductStatus;
 
 import lombok.Data;
@@ -18,6 +20,9 @@ public class ProductBriefDto implements Serializable{
 	private Boolean isFeatured;
 	private String brief;
 
+	private ProductGender gender;
+	private ProductKitType kitType;
+	private String season;
 	private ProductStatus status; 	
 	private String clubName;
 	private String brandName;	

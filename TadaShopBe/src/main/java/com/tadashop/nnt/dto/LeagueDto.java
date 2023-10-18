@@ -6,9 +6,9 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
-public class ClubDto implements Serializable {
+public class LeagueDto implements Serializable {
 	private Long id;
-	@NotEmpty(message = "Club name is required")
+	@NotEmpty(message = "League name is required")
 	private String name;
-	private Long leagueId;
+
 }

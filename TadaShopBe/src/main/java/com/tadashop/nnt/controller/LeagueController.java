@@ -1,6 +1,5 @@
 package com.tadashop.nnt.controller;
 
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -20,74 +19,74 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tadashop.nnt.dto.ClubDto;
-import com.tadashop.nnt.model.Club;
-import com.tadashop.nnt.service.ClubService;
+import com.tadashop.nnt.dto.LeagueDto;
+import com.tadashop.nnt.model.League;
+import com.tadashop.nnt.service.LeagueService;
 import com.tadashop.nnt.service.iplm.MapValidationErrorService;
 
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/")
 @CrossOrigin
-public class ClubController {
+public class LeagueController {
 	@Autowired
-	ClubService clubService;
+	LeagueService leagueService;
 	@Autowired
 	MapValidationErrorService mapValidationErrorService;
 	
 	@PreAuthorize("hasAuthority('admin:create')")
-	@PostMapping("/admin/club")
-	public ResponseEntity<?> createClub(@Valid @RequestBody ClubDto dto,
+	@PostMapping("/admin/league")
+	public ResponseEntity<?> createLeague(@Valid @RequestBody LeagueDto dto,
 											BindingResult result) {
 		ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationFields(result);
 		
 		if (responseEntity != null) {
 			return responseEntity;
 		}
-		Club entity = new Club();
+		
+		League entity = new League();
 		BeanUtils.copyProperties(dto, entity);
-		entity = clubService.save(dto);
+		entity = leagueService.save(entity);
+		
 		dto.setId(entity.getId());
+		
 		return new ResponseEntity<>(dto, HttpStatus.CREATED);
 	}
 	@PreAuthorize("hasAuthority('admin:update')")
-	@PatchMapping("/admin/club/{id}")
-	public ResponseEntity<?> updateClub(@PathVariable("id") Long id, @RequestBody ClubDto dto) {
-		Club entity = new Club();
+	@PatchMapping("/admin/league/{id}")
+	public ResponseEntity<?> updateLeague(@PathVariable("id") Long id, @RequestBody LeagueDto dto) {
+		League entity = new League();
 		BeanUtils.copyProperties(dto, entity);
-		entity = clubService.update(id, dto);
+		entity = leagueService.update(id, entity);
 		
 		dto.setId(entity.getId());
-		if(dto.getLeagueId()==null)
-			dto.setLeagueId(entity.getLeague().getId());
 		
 		return new ResponseEntity<>(dto, HttpStatus.CREATED);
 	}
 	
-	@GetMapping("/club")
-	public ResponseEntity<?> getClubs(){
-		return new ResponseEntity<>(clubService.findAll(), HttpStatus.OK);
+	@GetMapping("/league")
+	public ResponseEntity<?> getLeagues(){
+		return new ResponseEntity<>(leagueService.findAll(), HttpStatus.OK);
 	}
 	
-	@GetMapping("/club/page")
-	public ResponseEntity<?> getClubs(
+	@GetMapping("/league/page")
+	public ResponseEntity<?> getLeagues(
 			@PageableDefault(size = 5, sort = "name", direction = Sort.Direction.ASC)
 			Pageable pageable){
-		return new ResponseEntity<>(clubService.findAll(pageable), HttpStatus.OK);
+		return new ResponseEntity<>(leagueService.findAll(pageable), HttpStatus.OK);
 	}
 	
-	@GetMapping("/club/{id}/get")
-	public ResponseEntity<?> getClubs(@PathVariable("id") Long id){
-		return new ResponseEntity<>(clubService.findById(id), HttpStatus.OK);
+	@GetMapping("/league/{id}/get")
+	public ResponseEntity<?> getLeagues(@PathVariable("id") Long id){
+		return new ResponseEntity<>(leagueService.findById(id), HttpStatus.OK);
 	}
 	
 	@PreAuthorize("hasAuthority('admin:delete')")
-	@DeleteMapping("/admin/club/{id}")
-	public ResponseEntity<?> deleteClub(@PathVariable("id") Long id){
-		clubService.deleteById(id);
+	@DeleteMapping("/admin/league/{id}")
+	public ResponseEntity<?> deleteLeague(@PathVariable("id") Long id){
+		leagueService.deleteById(id);
 		
-		return new ResponseEntity<>("Club with ID: " + id + " was deleted", HttpStatus.OK);
+		return new ResponseEntity<>("League with ID: " + id + " was deleted", HttpStatus.OK);
 	}
 }

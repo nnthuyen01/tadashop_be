@@ -53,6 +53,9 @@ public class User extends AbstractEntity implements UserDetails {
 	@Column(name = "avatar")
 	private String avatar;
 	
+	@Column(name = "amount_paid")
+	private Double amountPaid = 0.0; 
+	
 	@Column(name = "enable")
 	private Boolean enable = false;
 

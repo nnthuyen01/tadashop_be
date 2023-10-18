@@ -6,13 +6,14 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.tadashop.nnt.dto.ClubDto;
 import com.tadashop.nnt.model.Club;
 
 public interface ClubService {
 	
-	Club save(Club entity);
+	Club save(ClubDto dto);
 	
-	Club update(Long id, Club entity);
+	Club update(Long id, ClubDto dto);
 	
 	List<Club> findAll();
 	

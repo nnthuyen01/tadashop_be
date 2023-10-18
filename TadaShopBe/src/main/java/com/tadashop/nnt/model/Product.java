@@ -6,11 +6,15 @@ import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.tadashop.nnt.utils.constant.ProductGender;
+import com.tadashop.nnt.utils.constant.ProductKitType;
 import com.tadashop.nnt.utils.constant.ProductStatus;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -67,7 +71,20 @@ public class Product extends AbstractEntity{
 	@Column(name = "update_date")
 	private Date updateDate;
 	
+	@Column(name = "gender")
+	@Enumerated(EnumType.STRING)
+	private ProductGender gender;
+	
+	@Column(name = "kit_type")
+	@Enumerated(EnumType.STRING)
+	private ProductKitType kitType;
+	
+	@Column(name = "season")
+	private String season;
+	
+	
 	@Column(name ="status")
+	@Enumerated(EnumType.STRING)
 	private ProductStatus status;
 	
 	@JsonIgnore

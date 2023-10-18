@@ -4,10 +4,16 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.validator.GenericValidator;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.tadashop.nnt.dto.OrderDetailResp;
 import com.tadashop.nnt.dto.OrderReq;
+import com.tadashop.nnt.exception.AppException;
 import com.tadashop.nnt.model.Cart;
 import com.tadashop.nnt.model.Order;
 import com.tadashop.nnt.model.OrderDetail;
@@ -60,6 +66,8 @@ public class OrderIplm implements OrderService {
 	SizeService sizeService;
 	private Double price = (double) 0;
 	private int quantity = 0;
+
+	@Transactional
 	public Order createOrder(OrderReq orderReq) {
 		Long userId = Utils.getIdCurrentUser();
 		User users = userRepo.getReferenceById(userId);
@@ -68,8 +76,7 @@ public class OrderIplm implements OrderService {
 		LocalDateTime date = LocalDateTime.now();
 		order.setCreateTime(date);
 		order.setOrderUser(users);
-		order.setState(StateOrderConstant.Pending);
-
+		order.setState(0);
 
 		OrderDetail orderDetail = new OrderDetail();
 
@@ -77,16 +84,6 @@ public class OrderIplm implements OrderService {
 		orderDetail.setNote(orderReq.getNote());
 		orderDetail.setReceiverName(orderReq.getDifferentReceiverName());
 		orderDetail.setReceiverPhone(orderReq.getDifferentReceiverPhone());
-		
-
-//		Voucher voucher = voucherRepo.findByCode(orderReq.getDiscountCode());
-//		if (voucher != null) {
-//			orderDetail.setDisscountCode(orderReq.getDiscountCode());
-//			orderDetail.setVoucher(voucher);
-//			orderDetail.setPriceOff(voucher.getPrice());
-//		} else {
-//			orderDetail.setPriceOff(Double.valueOf(0));
-//		}
 
 //		Payment payment = paymentRepo.getReferenceById(orderReq.getId_payment());
 		Payment payment = paymentRepo.findByName(orderReq.getPaymentMethod());
@@ -111,22 +108,142 @@ public class OrderIplm implements OrderService {
 				cartRepo.delete(cart);
 			});
 		}
-		
+
 		orderDetail.setQuantity(quantity);
-		orderItems.forEach(orderItem ->{
-			orderItem.setOrder(order);
-			orderItemRepo.save(orderItem);
-		});
-		
+//		orderItems.forEach(orderItem ->{
+//			orderItem.setOrder(order);
+//			orderItemRepo.save(orderItem);
+//		});
+
+		Voucher voucher = voucherRepo.findByCode(orderReq.getDiscountCode());
+		if (voucher != null) {
+			orderDetail.setDisscountCode(orderReq.getDiscountCode());
+			orderDetail.setPriceOff((price * voucher.getPriceOffPercent()) / 100);
+		} else {
+			orderDetail.setPriceOff(Double.valueOf(0));
+		}
+
 		Double totalPrice = price - orderDetail.getPriceOff();
 		orderDetail.setTotalPrice(totalPrice);
-		
+
 		order.setOrderItems(orderItems);
 		order.setOrderdetail(orderDetail);
 		orderRepo.save(order);
+		orderItems.forEach(orderItem -> {
+			orderItem.setOrder(order);
+			orderItemRepo.save(orderItem);
+		});
 
-		
 		return order;
 
 	}
+
+	public List<Order> getAllOrders() {
+		return orderRepo.findAll();
+	}
+
+	public Page<Order> findAllOrder(Pageable pageable) {
+		return orderRepo.findAll(pageable);
+	}
+
+	public Page<Order> searchOrder(final String kt, Pageable pageable) {
+		return orderRepo.findByStateContaining(kt, pageable);
+	}
+
+	public List<Order> getAllOrdersByUser() {
+
+		Long userId = Utils.getIdCurrentUser();
+
+		List<Order> orders = orderRepo.findByUserId(userId);
+		if (!orders.isEmpty()) {
+			return orders;
+		} else {
+			throw new AppException("Order Not Found");
+		}
+	}
+	
+	public Page<Order> getOrderHistory(final Long userId, Pageable pageable) {
+		if (userId == null) {
+			throw new IllegalArgumentException("User id cannot be null");
+		}
+		User user = userRepo.getReferenceById(userId);
+		if (user == null) {
+			throw new AppException("User not found");
+		}
+		Page<Order> orders = orderRepo.findByOrderUser(user, pageable);
+		if (!orders.isEmpty()) {
+			return orders;
+		} else {
+			throw new AppException("Order Not Found");
+		}
+	}
+
+	public OrderDetailResp findByIdOrder(Long id) {
+		Order order = orderRepo.findById(id).orElseThrow(() -> {
+			throw new AppException("not found order id" + id);
+		});
+		OrderDetailResp orderDetailResp = new OrderDetailResp();
+		orderDetailResp.setOrder(order);
+		orderDetailResp.setItems(new ArrayList<>());
+		List<OrderItem> orderItems = order.getOrderItems();
+		orderItems.forEach(orderItem -> {
+			OrderDetailResp.Items items = new OrderDetailResp.Items();
+			BeanUtils.copyProperties(orderItem, items);
+//	            OrderDetailResp.Items items = modelMapper.map(orderItem,OrderDetailResp.Items.class);
+			items.setProductSize(orderItem.getSize());
+			items.setProduct(orderItem.getSize().getProduct());
+			items.setTotalPrice(orderItem.getPrice() * orderItem.getQuantity());
+			orderDetailResp.getItems().add(items);
+		});
+		return orderDetailResp;
+	}
+
+	public Long countOrderByDay(int day, int month, int year) {
+		if (day == 0 && month == 0 && year == 0) {
+			return orderRepo.count();
+		}
+		if (!GenericValidator.isDate(year + "-" + month + "-" + day, "yyyy-MM-dd", false))
+			throw new AppException("Wrong day");
+
+		LocalDateTime date = LocalDateTime.of(year, month, day, 0, 0, 0);
+
+		return orderRepo.countAllTimeGreaterThanEqual(date);
+
+	}
+
+	public Double countRevenueByDay(int day, int month, int year) {
+		if (day == 0 && month == 0 && year == 0) {
+			return orderRepo.totalAllRevenue();
+		}
+		if (!GenericValidator.isDate(year + "-" + month + "-" + day, "yyyy-MM-dd", false))
+			throw new AppException("Wrong day");
+
+		LocalDateTime date = LocalDateTime.of(year, month, day, 0, 0, 0);
+
+		return orderRepo.totalRevenue(date);
+	}
+
+	public List<Order> getOrderByStatus(int status) {
+
+		StateOrderConstant state = StateOrderConstant.values()[status];
+		List<Order> orders = orderRepo.findByState(state);
+		if (!orders.isEmpty()) {
+			return orders;
+		} else {
+			throw new AppException("Order Not Found");
+		}
+	}
+
+
+	public Order updateStatusOrder(Long orderId, int status) {
+		var check = orderRepo.findById(orderId);
+		if (!check.isPresent()) {
+			throw new AppException("Product Id not found");
+		}
+		Order orderUpdate = check.get();
+		orderUpdate.setState(status);
+		orderRepo.save(orderUpdate);
+		return orderUpdate;
+	}
+
 }
