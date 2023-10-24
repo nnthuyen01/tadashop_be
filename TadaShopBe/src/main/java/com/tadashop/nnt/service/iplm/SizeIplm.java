@@ -62,7 +62,7 @@ public class SizeIplm implements SizeService{
     	
     	
     	var productCheck = productRepo.findById(dto.getProductId());
-//		List<?> foundedList = sizeRepo.findBySizeContainsIgnoreCaseAndProduct(dto.getSize(), productCheck.get());
+
 		List<?> foundedList = sizeRepo.findBySizeAndProduct(dto.getSize(), productCheck.get());
 		
 		if (foundedList.size() >= 1 && !found.getSize().equals(dto.getSize())) {

@@ -98,11 +98,11 @@ public class OrderIplm implements OrderService {
 				Size sizeProduct = sizeRepo.getReferenceById(cart.getCartID().getProductSizeId());
 				Product product = sizeProduct.getProduct();
 				quantity += cart.getQuantity();
-				price += (cart.getQuantity() * product.getPrice());
+				price += (cart.getQuantity() * product.getPriceAfterDiscount());
 				OrderItem orderItem = new OrderItem();
 				orderItem.setItemName(product.getName());
 				orderItem.setQuantity(cart.getQuantity());
-				orderItem.setPrice(product.getPrice());
+				orderItem.setPrice(product.getPriceAfterDiscount());
 				orderItem.setSize(sizeProduct);
 				orderItems.add(orderItem);
 				cartRepo.delete(cart);

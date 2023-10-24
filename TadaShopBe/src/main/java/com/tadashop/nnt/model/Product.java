@@ -43,11 +43,12 @@ public class Product extends AbstractEntity{
 	@Column(name= "name", nullable = false)
 	private String name;
 	
-	@Column(name = "price", nullable = false)
-	private Double price;
+	@Column(name = "original_price", nullable = false)
+	private Double originalPrice;
 	
-//	@Column(name = "quantity", nullable = false)
-//	private Integer quantity;
+	@Column(name = "price_after_discount", nullable = false)
+	private Double priceAfterDiscount;
+	
 	@Column(name = "total_quantity")
 	private Integer totalQuantity = 0;
 
@@ -57,7 +58,7 @@ public class Product extends AbstractEntity{
 	@Column(name = "discount")
 	private Float discount;
 	
-	@Column(name = "brief", length = 200, nullable = false)
+	@Column(name = "brief", length = 500, nullable = false)
 	private String brief;
 	
 	@Column(name = "description", length = 2000, nullable = false)

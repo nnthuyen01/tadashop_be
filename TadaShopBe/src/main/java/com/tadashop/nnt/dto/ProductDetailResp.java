@@ -18,8 +18,8 @@ public class ProductDetailResp implements Serializable{
 	
 	private Long id;
 	private String name;
-	private Double price;
-//	private Integer quantity;
+	private Double originalPrice;
+	private Double priceAfterDiscount;
 	private Integer totalQuantity;
 	private Boolean isFeatured;
 	private Float discount;

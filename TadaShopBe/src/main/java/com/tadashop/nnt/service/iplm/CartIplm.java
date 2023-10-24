@@ -67,7 +67,7 @@ public class CartIplm implements CartService {
 
 				cartResp.setQuantity(cart.getQuantity());
 				Product product = size.getProduct();
-				cartResp.setItem(new CartResp.Items(size, product.getName(), product.getImage(), product.getPrice()));
+				cartResp.setItem(new CartResp.Items(size, product.getName(), product.getImage(), product.getPriceAfterDiscount()));
 				cartResps.add(cartResp);
 			});
 			return cartResps;

@@ -14,7 +14,8 @@ public class ProductBriefDto implements Serializable{
 	private Long id;
 	private String name;
 	private Integer totalQuantity;
-	private Double price;
+	private Double originalPrice;
+	private Double priceAfterDiscount;
 	private Float discount;
 	
 	private Boolean isFeatured;

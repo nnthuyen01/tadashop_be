@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.tadashop.nnt.dto.ClubDto;
+import com.tadashop.nnt.dto.ClubResp;
 import com.tadashop.nnt.model.Club;
 
 public interface ClubService {
@@ -15,7 +16,7 @@ public interface ClubService {
 	
 	Club update(Long id, ClubDto dto);
 	
-	List<Club> findAll();
+	List<ClubResp> findAll();
 	
 	Page<Club> findAll(Pageable pageale );
 	

@@ -10,6 +10,7 @@ import com.tadashop.nnt.utils.constant.ProductStatus;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
@@ -21,11 +22,10 @@ public class ProductDto implements Serializable{
 	private String name;
 	
 	@Min(value = 0)
-	private Double price;
-	
-//	@Min(value = 0)
-//	private Integer quantity;
+	private Double originalPrice;
 
+	private Double priceAfterDiscount;
+	
 	private Integer totalQuantity;
 	
 	private Boolean isFeatured;
@@ -34,8 +34,9 @@ public class ProductDto implements Serializable{
 	@Max(value = 100)
 	private Float discount;
 
-	
+	@Size(max = 500, message = "Brief cannot exceed 500 characters")
 	private String brief;
+	@Size(max = 2000, message = "Description cannot exceed 2000 characters")
 	private String description;
 
 	private ProductGender gender;

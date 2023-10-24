@@ -54,12 +54,12 @@ public class ProductIplm implements ProductService{
 
 		Product entity = new Product();
 			
-//		if (dto.getName() != null) {
-//		    entity.setName(dto.getName());
-//		} 
 		dto.setTotalQuantity(entity.getTotalQuantity());
 		
 		BeanUtils.copyProperties(dto, entity);
+		
+		Double priceOff = Math.ceil((dto.getOriginalPrice() * (100 - dto.getDiscount())) / 100 / 1000) * 1000; // Làm tròn lên đến hàng ngàn
+		entity.setPriceAfterDiscount(priceOff);
 		
 		var club = new Club();
 		club.setId(dto.getClubId());
@@ -83,6 +83,7 @@ public class ProductIplm implements ProductService{
 		
 		var savedProduct = productRepository.save(entity);
 		dto.setId(savedProduct.getId());
+		dto.setPriceAfterDiscount(savedProduct.getPriceAfterDiscount());
 		
 		return dto;
 	}
@@ -94,6 +95,9 @@ public class ProductIplm implements ProductService{
 		//copy thanh phan nhung truong khong can copy
 		String ignoreFields[] = new String[]{"createdDate", "image",  "images", "viewCount"};
 		BeanUtils.copyProperties(dto,found ,ignoreFields);
+		
+		Double priceOff = Math.ceil((dto.getOriginalPrice() * (100 - dto.getDiscount())) / 100 / 1000) * 1000; // Làm tròn lên đến hàng ngàn
+		found.setPriceAfterDiscount(priceOff);
 		
 		ProductImage imgUpdate = new ProductImage();
 		BeanUtils.copyProperties(dto.getImage(), imgUpdate);
@@ -151,6 +155,7 @@ public class ProductIplm implements ProductService{
 		
 		var saveEntity = productRepository.save(found);
 		dto.setId(saveEntity.getId());
+		dto.setPriceAfterDiscount(saveEntity.getPriceAfterDiscount());
 		return dto;
 	}
 	
@@ -191,18 +196,7 @@ public class ProductIplm implements ProductService{
 	}
 	
 	private Set<ProductImage> saveProductImages(ProductDto dto){
-		var entityList = new HashSet<ProductImage>();
-		
-//		var newList = dto.getImages().stream().map(item->{
-//			ProductImage img = new ProductImage();
-//			BeanUtils.copyProperties(item, img);
-//			
-//			var savedImg = productImageRepository.save(img);
-//			item.setId(savedImg.getId());
-//			
-//			entityList.add(savedImg);
-//			return item;
-//		}).collect(Collectors.toList());
+		var entityList = new HashSet<ProductImage>();		
 		
 		var newList = dto.getImages().stream().map(item -> {
 	        // Kiểm tra xem hình ảnh đã tồn tại trong danh sách entityList chưa
@@ -283,8 +277,9 @@ public class ProductIplm implements ProductService{
 //			tQuantity += size.getQuantity();
 //		}
 //		productDetailResp.setTotalQuantity(tQuantity);
+		System.out.println(found.getTotalQuantity());
 		productDetailResp.setTotalQuantity(found.getTotalQuantity());
-		
+		System.out.println(productDetailResp.getTotalQuantity());
 		
 		BeanUtils.copyProperties(found, productDetailResp);
 		var images = found.getImages().stream().map(item->{

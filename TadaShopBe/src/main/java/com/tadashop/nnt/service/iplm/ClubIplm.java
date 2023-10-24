@@ -1,7 +1,9 @@
 package com.tadashop.nnt.service.iplm;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +11,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.tadashop.nnt.dto.BrandDto;
 import com.tadashop.nnt.dto.ClubDto;
+import com.tadashop.nnt.dto.ClubResp;
+import com.tadashop.nnt.dto.LeagueDto;
 import com.tadashop.nnt.exception.AppException;
 import com.tadashop.nnt.model.Club;
 import com.tadashop.nnt.model.League;
@@ -63,8 +68,27 @@ public class ClubIplm implements ClubService {
 		}
 	}
 
-	public List<Club> findAll() {
-		return clubRepository.findAll();
+	public List<ClubResp> findAll() {
+		List<Club> clubs = clubRepository.findAll();
+		List<ClubResp> clubResps = new ArrayList<>();
+		
+		 for (Club club : clubs) {
+		        ClubResp clubResp = new ClubResp();
+		        LeagueDto leagueDto = new LeagueDto();
+		        
+		        // Set properties of clubResp from club
+		        clubResp.setId(club.getId());
+		        clubResp.setName(club.getName());
+		        // Set other properties as needed
+		    	leagueDto.setId(club.getLeague().getId());
+				leagueDto.setName(club.getLeague().getName());
+				clubResp.setLeague(leagueDto);
+				
+				  // Add clubResp to the list
+			    clubResps.add(clubResp);
+		 }
+
+		return clubResps;
 	}
 
 	public Page<Club> findAll(Pageable pageable) {

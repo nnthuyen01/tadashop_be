@@ -1,5 +1,6 @@
 package com.tadashop.nnt.controller;
 
+import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tadashop.nnt.dto.ClubDto;
+import com.tadashop.nnt.dto.ClubResp;
+import com.tadashop.nnt.dto.LeagueDto;
 import com.tadashop.nnt.model.Club;
 import com.tadashop.nnt.service.ClubService;
 import com.tadashop.nnt.service.iplm.MapValidationErrorService;
@@ -36,13 +39,12 @@ public class ClubController {
 	ClubService clubService;
 	@Autowired
 	MapValidationErrorService mapValidationErrorService;
-	
+
 	@PreAuthorize("hasAuthority('admin:create')")
 	@PostMapping("/admin/club")
-	public ResponseEntity<?> createClub(@Valid @RequestBody ClubDto dto,
-											BindingResult result) {
+	public ResponseEntity<?> createClub(@Valid @RequestBody ClubDto dto, BindingResult result) {
 		ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationFields(result);
-		
+
 		if (responseEntity != null) {
 			return responseEntity;
 		}
@@ -52,42 +54,50 @@ public class ClubController {
 		dto.setId(entity.getId());
 		return new ResponseEntity<>(dto, HttpStatus.CREATED);
 	}
+
 	@PreAuthorize("hasAuthority('admin:update')")
 	@PatchMapping("/admin/club/{id}")
 	public ResponseEntity<?> updateClub(@PathVariable("id") Long id, @RequestBody ClubDto dto) {
 		Club entity = new Club();
 		BeanUtils.copyProperties(dto, entity);
 		entity = clubService.update(id, dto);
-		
+
 		dto.setId(entity.getId());
-		if(dto.getLeagueId()==null)
+		if (dto.getLeagueId() == null)
 			dto.setLeagueId(entity.getLeague().getId());
-		
+
 		return new ResponseEntity<>(dto, HttpStatus.CREATED);
 	}
-	
+
 	@GetMapping("/club")
-	public ResponseEntity<?> getClubs(){
+	public ResponseEntity<?> getClubs() {
+
 		return new ResponseEntity<>(clubService.findAll(), HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/club/page")
 	public ResponseEntity<?> getClubs(
-			@PageableDefault(size = 5, sort = "name", direction = Sort.Direction.ASC)
-			Pageable pageable){
+			@PageableDefault(size = 5, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
 		return new ResponseEntity<>(clubService.findAll(pageable), HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/club/{id}/get")
-	public ResponseEntity<?> getClubs(@PathVariable("id") Long id){
-		return new ResponseEntity<>(clubService.findById(id), HttpStatus.OK);
+	public ResponseEntity<?> getClubs(@PathVariable("id") Long id) {
+		Club club = clubService.findById(id);
+		ClubResp dto = new ClubResp();
+		LeagueDto leagueDto = new LeagueDto();
+		BeanUtils.copyProperties(club, dto);
+		leagueDto.setId(club.getLeague().getId());
+		leagueDto.setName(club.getLeague().getName());
+		dto.setLeague(leagueDto);
+		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
-	
+
 	@PreAuthorize("hasAuthority('admin:delete')")
 	@DeleteMapping("/admin/club/{id}")
-	public ResponseEntity<?> deleteClub(@PathVariable("id") Long id){
+	public ResponseEntity<?> deleteClub(@PathVariable("id") Long id) {
 		clubService.deleteById(id);
-		
+
 		return new ResponseEntity<>("Club with ID: " + id + " was deleted", HttpStatus.OK);
 	}
 }
