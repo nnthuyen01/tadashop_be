@@ -29,6 +29,7 @@ public class UserIplm implements UserService {
 	private final UserRepo userRepo;
 
 	private final FileStorageService fileStorageService;
+
 	@Override
 	public User getCurrentUser() {
 		Long userId = Utils.getIdCurrentUser();
@@ -78,29 +79,43 @@ public class UserIplm implements UserService {
 		userRepo.save(user);
 
 	}
-	
-	
+
 	@Override
-    public String upAvartar(MultipartFile file) throws IOException {
-        Long id = Utils.getIdCurrentUser();
-    	if (id == null) {
+	public String upAvartar(MultipartFile file) throws IOException {
+		Long id = Utils.getIdCurrentUser();
+		if (id == null) {
 			// Xử lý trường hợp khi userId không phải là số.
 			// Ví dụ: ném ra một exception, ghi log, hoặc xử lý khác.
 			throw new AppException("Not Found user");
 		} else {
 			User user = userRepo.findById(id).orElseThrow(() -> new AppException("User ID not found"));
-			
+
 			String imgUrl = null;
-			if (user.getAvatar() != null ) {
+			if (user.getAvatar() != null) {
 //				imgUrl = user.getAvatar();
 				fileStorageService.deleteAvatarFile(user.getAvatar());
 				imgUrl = fileStorageService.storeAvatarFile(file);
-			}else
+			} else
 				imgUrl = fileStorageService.storeAvatarFile(file);
 			user.setAvatar(imgUrl);
 			userRepo.save(user);
 			return imgUrl;
 		}
-       
-    }
+
+	}
+
+	@Override
+	public User findUserById(Long id) {		
+		if (id == null) {			
+			throw new AppException("Not Found user");
+		} else {
+			User user = userRepo.findById(id).orElseThrow(() -> new AppException("Not Found"));
+			return user;
+		}
+	}
+
+	@Override
+    public Page<User> findByUsername(String username, Pageable pageable){
+		return userRepo.findByUsernameContainsIgnoreCase(username, pageable);
+	}
 }

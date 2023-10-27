@@ -2,6 +2,8 @@ package com.tadashop.nnt.repository;
 
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,4 +23,6 @@ public interface UserRepo extends JpaRepository<User, Long> {
 
 	@Query(value = "select * from user where verification_code = :verify", nativeQuery = true)
 	public User findByVerifyCode(@Param("verify") String verify);
+	
+	Page<User> findByUsernameContainsIgnoreCase(String username,Pageable pageable);
 }

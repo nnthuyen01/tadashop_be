@@ -17,10 +17,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tadashop.nnt.dto.BrandDto;
 import com.tadashop.nnt.dto.UserResp;
-
+import com.tadashop.nnt.model.Brand;
+import com.tadashop.nnt.model.User;
 import com.tadashop.nnt.service.UserService;
 
 @RestController
@@ -64,5 +67,31 @@ public class AdminUserController {
 	public ResponseEntity<?> disable(@PathVariable Long userId) {
 		userService.disableUserById(userId);
 		return  new ResponseEntity<>("sucess", HttpStatus.OK);
+	}
+	
+	@PreAuthorize("hasAuthority('admin:read')")
+	@GetMapping("/admin/query/users")
+	public ResponseEntity<?> getUsersQuery(@RequestParam("query") String query, 
+			@PageableDefault(size = 2, sort = "id", direction = Sort.Direction.ASC) Pageable pageable ) {
+		Page<?> list = userService.findByUsername(query, pageable);
+		
+		List<UserResp> newList = list.stream().map(item -> {
+			UserResp dto = new UserResp();
+			BeanUtils.copyProperties(item, dto);
+			return dto;
+		}).collect(Collectors.toList());
+		
+		Page<UserResp> newPage =  new PageImpl<UserResp>(newList, pageable, list.getTotalElements());
+
+		return new ResponseEntity<>(newPage, HttpStatus.OK);
+	}
+	
+	@PreAuthorize("hasAuthority('admin:read')")
+	@GetMapping("/admin/account/{userId}")
+	public ResponseEntity<?> getUser(@PathVariable Long userId) {
+		User user = userService.findUserById(userId);
+		UserResp resp = new UserResp();
+		BeanUtils.copyProperties(user, resp);
+		return new ResponseEntity<>(resp, HttpStatus.OK);
 	}
 }
