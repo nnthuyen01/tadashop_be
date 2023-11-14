@@ -129,6 +129,7 @@ public class OrderIplm implements OrderService {
 		order.setOrderItems(orderItems);
 		order.setOrderdetail(orderDetail);
 		orderRepo.save(order);
+		orderDetail.setOrder(order);
 		orderItems.forEach(orderItem -> {
 			orderItem.setOrder(order);
 			orderItemRepo.save(orderItem);

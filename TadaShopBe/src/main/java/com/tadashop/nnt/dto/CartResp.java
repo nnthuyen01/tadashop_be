@@ -19,6 +19,7 @@ public class CartResp {
 	public static class Items {
 		Size size;
 		String productName;
+		Long idProduct;
 		ProductImage image;
 		Double price;
 	}

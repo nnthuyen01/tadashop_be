@@ -17,6 +17,7 @@ import com.tadashop.nnt.model.CartID;
 import com.tadashop.nnt.model.Product;
 import com.tadashop.nnt.model.Size;
 import com.tadashop.nnt.repository.CartRepo;
+import com.tadashop.nnt.repository.SizeRepo;
 import com.tadashop.nnt.service.CartService;
 import com.tadashop.nnt.service.SizeService;
 import com.tadashop.nnt.utils.Utils;
@@ -31,6 +32,8 @@ public class CartIplm implements CartService {
 	@Autowired
 	CartRepo cartRepo;
 	@Autowired
+	SizeRepo sizeRepo;
+	@Autowired
 	SizeService sizeService;
 
 	@Override
@@ -38,7 +41,22 @@ public class CartIplm implements CartService {
 
 		Long userId = Utils.getIdCurrentUser();
 		CartDto cartDto = new CartDto(new CartID(sizeId, userId), quantity);
+		
+		// Kiểm tra nếu quantity lớn hơn quantity trong sizeId
+	    if (isQuantityExceedsSizeQuantity(cartDto)) {
+	        throw new AppException("Số lượng vượt quá số lượng sản phẩm.");
+	    }
+	    
 		update(cartDto);
+	}
+	public boolean isQuantityExceedsSizeQuantity(CartDto cartDto) {
+	    int newSizeQuantity = getSizeQuantityById(cartDto.getCartID().getProductSizeId());
+	    return cartDto.getQuantity() > newSizeQuantity;
+	}
+
+	public int getSizeQuantityById(Long sizeId) {
+	   
+	    return sizeRepo.getReferenceById(sizeId).getQuantity();
 	}
 
 	public void update(CartDto cartDto) {
@@ -52,6 +70,9 @@ public class CartIplm implements CartService {
 			cartRepo.save(newCart);
 		} else {
 			updatedCart.setQuantity(updatedCart.getQuantity() + cartDto.getQuantity());
+			 if (updatedCart.getQuantity() > sizeRepo.getReferenceById(cartDto.getCartID().getProductSizeId()).getQuantity()) {
+			        throw new AppException("Số lượng vượt quá số lượng sản phẩm.");
+			    }
 			cartRepo.save(updatedCart);
 		}
 	}
@@ -67,7 +88,7 @@ public class CartIplm implements CartService {
 
 				cartResp.setQuantity(cart.getQuantity());
 				Product product = size.getProduct();
-				cartResp.setItem(new CartResp.Items(size, product.getName(), product.getImage(), product.getPriceAfterDiscount()));
+				cartResp.setItem(new CartResp.Items(size, product.getName(),product.getId(), product.getImage(), product.getPriceAfterDiscount()));
 				cartResps.add(cartResp);
 			});
 			return cartResps;
@@ -88,6 +109,8 @@ public class CartIplm implements CartService {
 		Cart updatedCart = cartRepo.findById(cartID).orElse(null);
 		if (updatedCart != null) {
 			updatedCart.setQuantity(quantity);
+			if(updatedCart.getQuantity() > sizeRepo.getReferenceById(cartID.getProductSizeId()).getQuantity())
+				throw new AppException("Số lượng vượt quá số lượng sản phẩm.");
 		}
 		return updatedCart;
 	}
@@ -104,9 +127,11 @@ public class CartIplm implements CartService {
 	@Override
 	public Cart increase(CartID cartID) {
 		Cart updatedCart = cartRepo.findById(cartID).orElse(null);
+	  
 		if (updatedCart != null && updatedCart.getQuantity() + 1 < 99) {
-			updatedCart.setQuantity(updatedCart.getQuantity() + 1);
+			updatedCart.setQuantity(updatedCart.getQuantity() + 1);			
 		}
+	    
 		return updatedCart;
 	}
 

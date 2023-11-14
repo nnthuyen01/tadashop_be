@@ -37,11 +37,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 
 public class OrderController {
-	@Autowired
+
 	private final OrderService orderService;
 
 	@PostMapping("/order")
-	private ResponseEntity<?> create(@RequestBody OrderReq orderReq) {
+	public ResponseEntity<?> create(@RequestBody OrderReq orderReq) {
 
 		return new ResponseEntity<>(orderService.createOrder(orderReq), HttpStatus.OK);
 	}
@@ -62,6 +62,7 @@ public class OrderController {
 		List<Order> newList = list.stream().map(item -> {
 			Order dto = new Order();
 			BeanUtils.copyProperties(item, dto);
+			 dto.setState(item.getStateValue());
 			return dto;
 		}).collect(Collectors.toList());
 
@@ -112,8 +113,8 @@ public class OrderController {
 	}
 
 	// Chua -> pass
-	@PreAuthorize("hasAuthority('admin:read')")
-	@GetMapping("/admin/order/{orderId}")
+
+	@GetMapping("/orderDetail/{orderId}")
 	public ResponseEntity<?> getOrderById(@PathVariable Long orderId) {
 		return new ResponseEntity<>(orderService.findByIdOrder(orderId), HttpStatus.OK);
 	}

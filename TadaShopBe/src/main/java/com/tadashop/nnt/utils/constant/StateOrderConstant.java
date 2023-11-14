@@ -1,7 +1,7 @@
 package com.tadashop.nnt.utils.constant;
 
 public enum StateOrderConstant {
-	Pending, Processing, Complete, Cancle, Delivery, Paid, UnPaid, Confirmed
+	Pending, Processing, Complete, Cancel, Delivery, Paid, UnPaid, Confirmed
 //    public static final String Pending = "pending";
 //    public static final String Processing = "processing";
 //    public static final String Complete = "complete";

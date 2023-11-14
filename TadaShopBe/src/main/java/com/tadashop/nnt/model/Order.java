@@ -45,7 +45,7 @@ public class Order extends AbstractEntity {
 	@JoinColumn(name = "order_User_id")
 	private User orderUser;
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
 	@JsonManagedReference
 	@JoinColumn(name = "order_Detail_id")
 	private OrderDetail orderdetail;
@@ -67,7 +67,7 @@ public class Order extends AbstractEntity {
 	            this.state = StateOrderConstant.Complete;
 	            break;
 	        case 3:
-	            this.state = StateOrderConstant.Cancle;
+	            this.state = StateOrderConstant.Cancel;
 	            break;
 	        case 4:
 	            this.state = StateOrderConstant.Delivery;
@@ -87,4 +87,29 @@ public class Order extends AbstractEntity {
 	            throw new IllegalArgumentException("Invalid state value: " + stateValue);
 	    }
 	}
+	public int getStateValue() {
+        // Map StateOrderConstant enum values to integer values
+        switch (this.state) {
+            case Pending:
+                return 0;
+            case Processing:
+                return 1;
+            case Complete:
+                return 2;
+            case Cancel:
+                return 3;
+            case Delivery:
+                return 4;
+            case Paid:
+                return 5;
+            case UnPaid:
+                return 6;
+            case Confirmed:
+                return 7;
+            // Add cases for other enum values as needed
+            default:
+                // Handle invalid state values or throw an exception
+                throw new IllegalArgumentException("Invalid state value: " + this.state);
+        }
+    }
 }
