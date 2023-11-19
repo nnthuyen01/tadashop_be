@@ -85,6 +85,10 @@ public class AuthenticationIplm implements AuthenticationService {
 		return repository.save(user);
 	}
 
+	 public boolean adminExists() {
+		 return repository.existsByUsernameAndRole("admin", Role.ADMIN);
+	 }
+	
 	public AuthenticationResponse authenticate(AuthenticationRequest request) {
 
 		Optional<User> tempUser = repository.findByUsername(request.getUsername());
@@ -171,7 +175,7 @@ public class AuthenticationIplm implements AuthenticationService {
 
 	public User findUserByEmail(String email) {
 		var user = repository.findByEmail(email);
-//		return user.get();
+
 		if (user.isPresent()) {
 	        return user.get();
 	    } else {

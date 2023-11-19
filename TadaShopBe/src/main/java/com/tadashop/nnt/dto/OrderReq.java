@@ -13,7 +13,7 @@ public class OrderReq {
 	private String note;
 	private String differentReceiverName;
 	private String differentReceiverPhone;
-	private Integer quantity;
+	private Integer totalQuantity;
 	private Double totalPrice;
 	private String discountCode;
 	@NotEmpty(message = "Paymend method not empty")

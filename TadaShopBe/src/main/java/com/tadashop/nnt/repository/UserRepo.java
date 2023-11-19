@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.tadashop.nnt.model.User;
+import com.tadashop.nnt.utils.constant.Role;
 
 @Repository
 public interface UserRepo extends JpaRepository<User, Long> {
@@ -20,6 +21,8 @@ public interface UserRepo extends JpaRepository<User, Long> {
 	Boolean existsByEmail(String email);
 	
 	Boolean existsByUsername(String username);
+	
+	Boolean existsByUsernameAndRole(String username, Role Role);
 
 	@Query(value = "select * from user where verification_code = :verify", nativeQuery = true)
 	public User findByVerifyCode(@Param("verify") String verify);

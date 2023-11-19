@@ -77,13 +77,13 @@ public class OrderController {
 			@PageableDefault(size = 5, sort = "state", direction = Sort.Direction.ASC) Pageable pageable) {
 		Page<Order> list = orderService.searchOrder(state, pageable);
 
-//		List<Order> newList = list.getContent().stream().map(item -> {
-//			Order dto = new Order();
-//			BeanUtils.copyProperties(item, dto);
-//			return dto;
-//		}).collect(Collectors.toList());
-//
-//		Page<Order> newPage = new PageImpl<Order>(newList, pageable, list.getTotalElements());
+////		List<Order> newList = list.getContent().stream().map(item -> {
+////			Order dto = new Order();
+////			BeanUtils.copyProperties(item, dto);
+////			return dto;
+////		}).collect(Collectors.toList());
+////
+////		Page<Order> newPage = new PageImpl<Order>(newList, pageable, list.getTotalElements());
 
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}

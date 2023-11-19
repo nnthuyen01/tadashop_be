@@ -40,19 +40,41 @@ public class Order extends AbstractEntity {
 	@Column(name = "create_date")
 	private LocalDateTime createTime;
 
-
+	@Column(name ="delivery_address", nullable = false)
+	private String deliveryAddress;
+	
+	@Column(name ="receiver_phone")
+	private String receiverPhone;
+	
+	@Column(name ="receiver_name")
+	private String receiverName;
+	
+	@Column(name = "total_quantity", nullable = false)
+	private Integer totalQuantity;
+	
+	@Column(name = "total_price",  nullable = false)
+	private Double totalPrice;
+	
+	@Column(name ="discount_code")
+	private String discountCode;
+	
+	@Column(name ="price_off")
+	private Double priceOff;
+	
+	@Column(name ="note")
+	private String note;
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_User_id")
 	private User orderUser;
-
-	@OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-	@JsonManagedReference
-	@JoinColumn(name = "order_Detail_id")
-	private OrderDetail orderdetail;
 	
 	@JsonIgnore
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<OrderItem> orderItems;
+	private List<OrderDetail> orderDetails;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "payment_id")
+	private Payment payment;
 	
 	public void setState(int stateValue) {
 	    // Map integer values to StateOrderConstant enum values

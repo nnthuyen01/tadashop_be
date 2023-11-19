@@ -35,10 +35,10 @@ public interface OrderRepo extends JpaRepository<Order, Long> {
 	@Query("select count(o) from Order o where o.state = 'Paid' and o.createTime>=:day")
 	Long countAllTimeGreaterThanEqual(LocalDateTime day);
 
-	@Query("select SUM(o.orderdetail.totalPrice) from Order o where o.createTime >= :date")
+	@Query("select SUM(o.totalPrice) from Order o where o.createTime >= :date")
 	Double totalRevenue(LocalDateTime date);
 
-	@Query("select SUM(o.orderdetail.totalPrice) from Order o")
+	@Query("select SUM(o.totalPrice) from Order o")
 	Double totalAllRevenue();
 
 	List<Order> findByState(StateOrderConstant state);

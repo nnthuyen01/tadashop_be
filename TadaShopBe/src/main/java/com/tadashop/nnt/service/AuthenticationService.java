@@ -17,6 +17,8 @@ public interface AuthenticationService {
 	
 	User saveAdmin(UserReq userReq);
 	
+	boolean adminExists();
+	
 	AuthenticationResponse authenticate(AuthenticationRequest request);
 	
 	String validateVerificationToken(String token, String email);

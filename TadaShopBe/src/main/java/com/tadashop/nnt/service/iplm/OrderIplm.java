@@ -17,7 +17,7 @@ import com.tadashop.nnt.exception.AppException;
 import com.tadashop.nnt.model.Cart;
 import com.tadashop.nnt.model.Order;
 import com.tadashop.nnt.model.OrderDetail;
-import com.tadashop.nnt.model.OrderItem;
+import com.tadashop.nnt.model.OrderDetail;
 import com.tadashop.nnt.model.Payment;
 import com.tadashop.nnt.model.Product;
 import com.tadashop.nnt.model.Size;
@@ -25,7 +25,6 @@ import com.tadashop.nnt.model.User;
 import com.tadashop.nnt.model.Voucher;
 import com.tadashop.nnt.repository.CartRepo;
 import com.tadashop.nnt.repository.OrderDetailRepo;
-import com.tadashop.nnt.repository.OrderItemRepo;
 import com.tadashop.nnt.repository.OrderRepo;
 import com.tadashop.nnt.repository.PaymentRepo;
 import com.tadashop.nnt.repository.ProductRepo;
@@ -56,8 +55,7 @@ public class OrderIplm implements OrderService {
 	PaymentRepo paymentRepo;
 	@Autowired
 	OrderRepo orderRepo;
-	@Autowired
-	OrderItemRepo orderItemRepo;
+	
 	@Autowired
 	SizeRepo sizeRepo;
 	@Autowired
@@ -65,7 +63,7 @@ public class OrderIplm implements OrderService {
 	@Autowired
 	SizeService sizeService;
 	private Double price = (double) 0;
-	private int quantity = 0;
+	private int totalQuantity = 0;
 
 	@Transactional
 	public Order createOrder(OrderReq orderReq) {
@@ -78,18 +76,18 @@ public class OrderIplm implements OrderService {
 		order.setOrderUser(users);
 		order.setState(0);
 
-		OrderDetail orderDetail = new OrderDetail();
 
-		orderDetail.setDeliveryAddress(orderReq.getDeliveryAddress());
-		orderDetail.setNote(orderReq.getNote());
-		orderDetail.setReceiverName(orderReq.getDifferentReceiverName());
-		orderDetail.setReceiverPhone(orderReq.getDifferentReceiverPhone());
+
+		order.setDeliveryAddress(orderReq.getDeliveryAddress());
+		order.setNote(orderReq.getNote());
+		order.setReceiverName(orderReq.getDifferentReceiverName());
+		order.setReceiverPhone(orderReq.getDifferentReceiverPhone());
 
 //		Payment payment = paymentRepo.getReferenceById(orderReq.getId_payment());
 		Payment payment = paymentRepo.findByName(orderReq.getPaymentMethod());
-		orderDetail.setPayment(payment);
+		order.setPayment(payment);
 
-		List<OrderItem> orderItems = new ArrayList<>();
+		List<OrderDetail> orderDetails = new ArrayList<>();
 		List<Cart> cartList = cartRepo.findByCartID_UserId(userId);
 
 		if (cartList.size() > 0) {
@@ -97,42 +95,38 @@ public class OrderIplm implements OrderService {
 
 				Size sizeProduct = sizeRepo.getReferenceById(cart.getCartID().getProductSizeId());
 				Product product = sizeProduct.getProduct();
-				quantity += cart.getQuantity();
+				totalQuantity += cart.getQuantity();
 				price += (cart.getQuantity() * product.getPriceAfterDiscount());
-				OrderItem orderItem = new OrderItem();
-				orderItem.setItemName(product.getName());
-				orderItem.setQuantity(cart.getQuantity());
-				orderItem.setPrice(product.getPriceAfterDiscount());
-				orderItem.setSize(sizeProduct);
-				orderItems.add(orderItem);
+				OrderDetail orderDetail = new OrderDetail();
+				orderDetail.setItemName(product.getName());
+				orderDetail.setQuantity(cart.getQuantity());
+				orderDetail.setPrice(product.getPriceAfterDiscount());
+				orderDetail.setSize(sizeProduct);
+				orderDetails.add(orderDetail);
 				cartRepo.delete(cart);
 			});
 		}
 
-		orderDetail.setQuantity(quantity);
-//		orderItems.forEach(orderItem ->{
-//			orderItem.setOrder(order);
-//			orderItemRepo.save(orderItem);
-//		});
+		order.setTotalQuantity(totalQuantity);
+
 
 		Voucher voucher = voucherRepo.findByCode(orderReq.getDiscountCode());
 		if (voucher != null) {
-			orderDetail.setDisscountCode(orderReq.getDiscountCode());
-			orderDetail.setPriceOff((price * voucher.getPriceOffPercent()) / 100);
+			order.setDiscountCode(orderReq.getDiscountCode());
+			order.setPriceOff((price * voucher.getPriceOffPercent()) / 100);
 		} else {
-			orderDetail.setPriceOff(Double.valueOf(0));
+			order.setPriceOff(Double.valueOf(0));
 		}
 
-		Double totalPrice = price - orderDetail.getPriceOff();
-		orderDetail.setTotalPrice(totalPrice);
+		Double totalPrice = price - order.getPriceOff();
+		order.setTotalPrice(totalPrice);
 
-		order.setOrderItems(orderItems);
-		order.setOrderdetail(orderDetail);
+		order.setOrderDetails(orderDetails);
 		orderRepo.save(order);
-		orderDetail.setOrder(order);
-		orderItems.forEach(orderItem -> {
+		
+		orderDetails.forEach(orderItem -> {
 			orderItem.setOrder(order);
-			orderItemRepo.save(orderItem);
+			orderDetailRepo.save(orderItem);
 		});
 
 		return order;
@@ -186,7 +180,7 @@ public class OrderIplm implements OrderService {
 		OrderDetailResp orderDetailResp = new OrderDetailResp();
 		orderDetailResp.setOrder(order);
 		orderDetailResp.setItems(new ArrayList<>());
-		List<OrderItem> orderItems = order.getOrderItems();
+		List<OrderDetail> orderItems = order.getOrderDetails();
 		orderItems.forEach(orderItem -> {
 			OrderDetailResp.Items items = new OrderDetailResp.Items();
 			BeanUtils.copyProperties(orderItem, items);
@@ -239,9 +233,32 @@ public class OrderIplm implements OrderService {
 	public Order updateStatusOrder(Long orderId, int status) {
 		var check = orderRepo.findById(orderId);
 		if (!check.isPresent()) {
-			throw new AppException("Product Id not found");
+			throw new AppException("Order Id not found");
 		}
 		Order orderUpdate = check.get();
+		
+		//Tru so luong san pham he thong
+		if(status == 5 || status == 2) {
+			 orderUpdate.getOrderDetails().stream().forEach(orderDetail -> {
+				 	Size sizeProduct = orderDetail.getSize();
+				 
+		            Product product = sizeProduct.getProduct();
+		            int quantityInOrder = orderDetail.getQuantity();
+		            
+		            // Kiểm tra và trừ số lượng sản phẩm trong kho
+		            if (sizeProduct.getQuantity() >= quantityInOrder) {
+		            	sizeProduct.setQuantity(sizeProduct.getQuantity() - quantityInOrder);
+		            	product.setTotalQuantity(product.getTotalQuantity() - quantityInOrder);
+		                // Cập nhật thông tin sản phẩm trong kho
+		            	productRepo.save(product);
+		            	sizeRepo.save(sizeProduct);
+		            } else {
+		                throw new AppException("Not enough stock for product: " + sizeProduct.getId());
+		            }
+		        });
+		}
+				
+	
 		orderUpdate.setState(status);
 		orderRepo.save(orderUpdate);
 		return orderUpdate;

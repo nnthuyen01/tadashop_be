@@ -38,5 +38,5 @@ public class Size extends AbstractEntity{
 	
     @JsonIgnore
     @OneToMany(mappedBy = "size",fetch = FetchType.LAZY,  cascade = CascadeType.REMOVE)
-    private List<OrderItem> orderItems;
+    private List<OrderDetail> orderItems;
 }
