@@ -55,15 +55,16 @@ public class OrderIplm implements OrderService {
 	PaymentRepo paymentRepo;
 	@Autowired
 	OrderRepo orderRepo;
-	
+
 	@Autowired
 	SizeRepo sizeRepo;
 	@Autowired
 	OrderDetailRepo orderDetailRepo;
 	@Autowired
 	SizeService sizeService;
-	private Double price = (double) 0;
-	private int totalQuantity = 0;
+
+	Double price = (double) 0;
+	int totalQuantity = 0;
 
 	@Transactional
 	public Order createOrder(OrderReq orderReq) {
@@ -75,8 +76,6 @@ public class OrderIplm implements OrderService {
 		order.setCreateTime(date);
 		order.setOrderUser(users);
 		order.setState(0);
-
-
 
 		order.setDeliveryAddress(orderReq.getDeliveryAddress());
 		order.setNote(orderReq.getNote());
@@ -97,6 +96,7 @@ public class OrderIplm implements OrderService {
 				Product product = sizeProduct.getProduct();
 				totalQuantity += cart.getQuantity();
 				price += (cart.getQuantity() * product.getPriceAfterDiscount());
+
 				OrderDetail orderDetail = new OrderDetail();
 				orderDetail.setItemName(product.getName());
 				orderDetail.setQuantity(cart.getQuantity());
@@ -109,7 +109,6 @@ public class OrderIplm implements OrderService {
 
 		order.setTotalQuantity(totalQuantity);
 
-
 		Voucher voucher = voucherRepo.findByCode(orderReq.getDiscountCode());
 		if (voucher != null) {
 			order.setDiscountCode(orderReq.getDiscountCode());
@@ -121,9 +120,13 @@ public class OrderIplm implements OrderService {
 		Double totalPrice = price - order.getPriceOff();
 		order.setTotalPrice(totalPrice);
 
+//		 Reset before saving to the database
+		price = 0.0;
+		totalQuantity = 0;
+
 		order.setOrderDetails(orderDetails);
 		orderRepo.save(order);
-		
+
 		orderDetails.forEach(orderItem -> {
 			orderItem.setOrder(order);
 			orderDetailRepo.save(orderItem);
@@ -156,7 +159,7 @@ public class OrderIplm implements OrderService {
 			throw new AppException("Order Not Found");
 		}
 	}
-	
+
 	public Page<Order> getOrderHistory(final Long userId, Pageable pageable) {
 		if (userId == null) {
 			throw new IllegalArgumentException("User id cannot be null");
@@ -229,36 +232,34 @@ public class OrderIplm implements OrderService {
 		}
 	}
 
-
 	public Order updateStatusOrder(Long orderId, int status) {
 		var check = orderRepo.findById(orderId);
 		if (!check.isPresent()) {
 			throw new AppException("Order Id not found");
 		}
 		Order orderUpdate = check.get();
-		
-		//Tru so luong san pham he thong
-		if(status == 5 || status == 2) {
-			 orderUpdate.getOrderDetails().stream().forEach(orderDetail -> {
-				 	Size sizeProduct = orderDetail.getSize();
-				 
-		            Product product = sizeProduct.getProduct();
-		            int quantityInOrder = orderDetail.getQuantity();
-		            
-		            // Kiểm tra và trừ số lượng sản phẩm trong kho
-		            if (sizeProduct.getQuantity() >= quantityInOrder) {
-		            	sizeProduct.setQuantity(sizeProduct.getQuantity() - quantityInOrder);
-		            	product.setTotalQuantity(product.getTotalQuantity() - quantityInOrder);
-		                // Cập nhật thông tin sản phẩm trong kho
-		            	productRepo.save(product);
-		            	sizeRepo.save(sizeProduct);
-		            } else {
-		                throw new AppException("Not enough stock for product: " + sizeProduct.getId());
-		            }
-		        });
+
+		// Tru so luong san pham he thong
+		if (status == 5 || status == 2) {
+			orderUpdate.getOrderDetails().stream().forEach(orderDetail -> {
+				Size sizeProduct = orderDetail.getSize();
+
+				Product product = sizeProduct.getProduct();
+				int quantityInOrder = orderDetail.getQuantity();
+
+				// Kiểm tra và trừ số lượng sản phẩm trong kho
+				if (sizeProduct.getQuantity() >= quantityInOrder) {
+					sizeProduct.setQuantity(sizeProduct.getQuantity() - quantityInOrder);
+					product.setTotalQuantity(product.getTotalQuantity() - quantityInOrder);
+					// Cập nhật thông tin sản phẩm trong kho
+					productRepo.save(product);
+					sizeRepo.save(sizeProduct);
+				} else {
+					throw new AppException("Not enough stock for product: " + sizeProduct.getId());
+				}
+			});
 		}
-				
-	
+
 		orderUpdate.setState(status);
 		orderRepo.save(orderUpdate);
 		return orderUpdate;
