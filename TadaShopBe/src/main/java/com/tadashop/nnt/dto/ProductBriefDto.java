@@ -28,4 +28,5 @@ public class ProductBriefDto implements Serializable{
 	private String clubName;
 	private String brandName;	
 	private String imageFileName;
+	private String league;
 }

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.validator.GenericValidator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,6 +114,8 @@ public class OrderIplm implements OrderService {
 		if (voucher != null) {
 			order.setDiscountCode(orderReq.getDiscountCode());
 			order.setPriceOff((price * voucher.getPriceOffPercent()) / 100);
+			voucher.setStatus(0);
+			voucherRepo.save(voucher);
 		} else {
 			order.setPriceOff(Double.valueOf(0));
 		}
@@ -254,6 +257,31 @@ public class OrderIplm implements OrderService {
 					// Cập nhật thông tin sản phẩm trong kho
 					productRepo.save(product);
 					sizeRepo.save(sizeProduct);
+					// set total amount user
+					User user = orderUpdate.getOrderUser();
+//					Long userId = Utils.getIdCurrentUser();
+//					User user = userRepo.getReferenceById(userId);
+					user.setAmountPaid(orderUpdate.getTotalPrice() + user.getAmountPaid());
+					userRepo.save(user);
+
+					List<Voucher> vouchers = user.getVouchers();
+					int numberOfVouchers = vouchers.size();
+					double amountPaid = user.getAmountPaid();
+					int temp = (int) (amountPaid / 500000);
+					if (temp > numberOfVouchers) {
+						int loop = temp - numberOfVouchers;
+						for (int i = 1; i <= loop; i ++ ) {
+						Voucher voucher = new Voucher();
+						voucher.setUser(user);
+						voucher.setPriceOffPercent(10);
+						voucher.setStatus(1);
+						String randomPart = RandomStringUtils.randomAlphanumeric(4).toUpperCase();
+						String code = "TADA" + randomPart;
+						voucher.setVoucher(code);
+						voucherRepo.save(voucher);
+						}
+					}
+
 				} else {
 					throw new AppException("Not enough stock for product: " + sizeProduct.getId());
 				}

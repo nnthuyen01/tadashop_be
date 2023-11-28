@@ -165,4 +165,16 @@ public class ProductController {
                 .body("Not Found Product ID");
 //		return new ResponseEntity<>(productService.findProductById(id), HttpStatus.OK);
     }
+	
+	@GetMapping("/products/findLeague")
+	public ResponseEntity<?> getProductByleague(@RequestParam("query") String query,
+			@PageableDefault(size = 2, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
+
+		return new ResponseEntity<>(productService.getProductByLeague(query, pageable), HttpStatus.OK);
+	}
+	@GetMapping("/products/list/queryName")
+	public ResponseEntity<?> getProductsByQueryname(@RequestParam("query") String query) {
+		return new ResponseEntity<>(productService.getProductsByQueryName(query), HttpStatus.OK);
+	}
+
 }

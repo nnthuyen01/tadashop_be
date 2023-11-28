@@ -169,6 +169,7 @@ public class ProductIplm implements ProductService{
 			dto.setBrandName(item.getBrand().getName());
 			dto.setImageFileName(item.getImage().getFileName());
 			
+			dto.setLeague(item.getClub().getLeague().getName());
 			return dto;
 		}).collect(Collectors.toList());
 		
@@ -177,6 +178,7 @@ public class ProductIplm implements ProductService{
 		return newPage;
 	}
 	
+
 	public List<ProductBriefDto> getProducts(){
 		var list = productRepository.findAll();
 		var newList = list.stream().map(item->{
@@ -186,7 +188,7 @@ public class ProductIplm implements ProductService{
 			dto.setClubName(item.getClub().getName());
 			dto.setBrandName(item.getBrand().getName());
 			dto.setImageFileName(item.getImage().getFileName());
-			
+			dto.setLeague(item.getClub().getLeague().getName());
 			return dto;
 		}).collect(Collectors.toList());
 		
@@ -272,11 +274,6 @@ public class ProductIplm implements ProductService{
 		
 		List<Size> sizes = sizeRepo.findAllByProduct(found);
 		
-//		Integer tQuantity = 0;
-//		for (Size size : sizes ) {
-//			tQuantity += size.getQuantity();
-//		}
-//		productDetailResp.setTotalQuantity(tQuantity);
 		System.out.println(found.getTotalQuantity());
 		productDetailResp.setTotalQuantity(found.getTotalQuantity());
 		System.out.println(productDetailResp.getTotalQuantity());
@@ -296,6 +293,39 @@ public class ProductIplm implements ProductService{
 		
 		return productDetailResp;
 	}
+
+	public Page<ProductBriefDto> getProductByLeague(String name, Pageable pageable){
+		var list = productRepository.findByLeague(name, pageable);
+		var newList = list.getContent().stream().map(item->{
+			ProductBriefDto dto = new ProductBriefDto();
+			BeanUtils.copyProperties(item, dto);
+			
+			dto.setClubName(item.getClub().getName());
+			dto.setBrandName(item.getBrand().getName());
+			dto.setImageFileName(item.getImage().getFileName());
+			
+			dto.setLeague(item.getClub().getLeague().getName());
+			return dto;
+		}).collect(Collectors.toList());
+		
+		var newPage = new PageImpl<ProductBriefDto>(newList, list.getPageable(), list.getTotalElements());
+		
+		return newPage;
+	}
 	
-	
+	public List<ProductBriefDto> getProductsByQueryName(String name){
+		var list = productRepository.findByNameContainsIgnoreCase(name);
+		var newList = list.stream().map(item->{
+			ProductBriefDto dto = new ProductBriefDto();
+			BeanUtils.copyProperties(item, dto);
+			
+			dto.setClubName(item.getClub().getName());
+			dto.setBrandName(item.getBrand().getName());
+			dto.setImageFileName(item.getImage().getFileName());
+			dto.setLeague(item.getClub().getLeague().getName());
+			return dto;
+		}).collect(Collectors.toList());
+
+		return newList;
+	}
 }

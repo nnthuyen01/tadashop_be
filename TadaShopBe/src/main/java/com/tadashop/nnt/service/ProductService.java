@@ -24,4 +24,9 @@ public interface ProductService {
 	ProductDetailResp findProductById(Long id);
 	
 	List<ProductBriefDto> getProducts();
+	
+	Page<ProductBriefDto> getProductByLeague(String name, Pageable pageable);
+
+	List<ProductBriefDto> getProductsByQueryName(String name);
+	
 }

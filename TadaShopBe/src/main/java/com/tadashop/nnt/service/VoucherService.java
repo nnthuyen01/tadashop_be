@@ -10,9 +10,12 @@ import com.tadashop.nnt.model.Voucher;
 
 public interface VoucherService {
 	List<Voucher> getAllVouchers();
+	List<Voucher> getAllVouchersByUser();
 	Voucher createVoucher(VoucherDto dto);
 	Voucher updateVoucher(VoucherDto dto);
 	Voucher getVoucherById(Long id);
 	void deleteVoucherById(Long id);
 	Page<Voucher> findByCode(String code, Pageable pageable);
+	
+	Voucher findByLikeCode(String code);
 }

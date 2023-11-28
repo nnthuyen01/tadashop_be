@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.http.HttpStatus;
 //import org.springframework.http.HttpStatusCode;
@@ -27,10 +28,15 @@ import com.tadashop.nnt.exception.AppException;
 import com.tadashop.nnt.model.Order;
 import com.tadashop.nnt.model.Product;
 import com.tadashop.nnt.model.Size;
+import com.tadashop.nnt.model.User;
+import com.tadashop.nnt.model.Voucher;
 import com.tadashop.nnt.paymentConfig.VnpayConfig;
 import com.tadashop.nnt.repository.OrderRepo;
 import com.tadashop.nnt.repository.ProductRepo;
 import com.tadashop.nnt.repository.SizeRepo;
+import com.tadashop.nnt.repository.UserRepo;
+import com.tadashop.nnt.repository.VoucherRepo;
+import com.tadashop.nnt.utils.Utils;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletResponse;
@@ -47,6 +53,10 @@ public class PaymentOrderController {
 	    private ProductRepo productRepo;
 	 @Autowired
 	    private SizeRepo sizeRepo;
+	 @Autowired
+	    private UserRepo userRepo;
+	 @Autowired
+	    private VoucherRepo voucherRepo;
 	@GetMapping("/payment-callback")
 	public void paymentCallback(@RequestParam Map<String, String> queryParams, HttpServletResponse response)
 			throws IOException {
@@ -76,6 +86,31 @@ public class PaymentOrderController {
 							// Cập nhật thông tin sản phẩm trong kho
 							productRepo.save(product);
 							sizeRepo.save(sizeProduct);
+							
+							// set total amount user
+							User user = order.getOrderUser();
+//							Long userId = Utils.getIdCurrentUser();
+//							User user = userRepo.getReferenceById(userId);
+							user.setAmountPaid(order.getTotalPrice() + user.getAmountPaid());
+							userRepo.save(user);
+
+							List<Voucher> vouchers = user.getVouchers();
+							int numberOfVouchers = vouchers.size();
+							double amountPaid = user.getAmountPaid();
+							int temp = (int) (amountPaid / 500000);
+							if (temp > numberOfVouchers) {
+								int loop = temp - numberOfVouchers;
+								for (int i = 1; i <= loop; i ++ ) {
+								Voucher voucher = new Voucher();
+								voucher.setUser(user);
+								voucher.setPriceOffPercent(10);
+								voucher.setStatus(1);
+								String randomPart = RandomStringUtils.randomAlphanumeric(4).toUpperCase();
+								String code = "TADA" + randomPart;
+								voucher.setVoucher(code);
+								voucherRepo.save(voucher);
+								}
+							}
 						} else {
 							throw new AppException("Not enough stock for product: " + sizeProduct.getId());
 						}

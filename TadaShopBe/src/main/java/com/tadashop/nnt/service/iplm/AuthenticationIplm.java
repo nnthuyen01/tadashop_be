@@ -1,6 +1,5 @@
 package com.tadashop.nnt.service.iplm;
 
-
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Optional;
@@ -58,9 +57,10 @@ public class AuthenticationIplm implements AuthenticationService {
 			throw new AppException("Username already exits");
 		}
 
-		var user = User.builder(). firstname(userReq.getFirstname()).lastname(userReq.getLastname())
+		var user = User.builder().firstname(userReq.getFirstname()).lastname(userReq.getLastname())
 				.email(userReq.getEmail()).phone(userReq.getPhone()).username(userReq.getUsername())
-				.password(passwordEncoder.encode(userReq.getPassword())).role(Role.USER).amountPaid(0.0).enable(false).build();
+				.password(passwordEncoder.encode(userReq.getPassword())).role(Role.USER).amountPaid(0.0).enable(false)
+				.build();
 
 //        users.getAddresses().add(new Address(null,userReq.getAddress(),true,users));
 
@@ -81,14 +81,15 @@ public class AuthenticationIplm implements AuthenticationService {
 
 		var user = User.builder().firstname(userReq.getFirstname()).lastname(userReq.getLastname())
 				.email(userReq.getEmail()).phone(userReq.getPhone()).username(userReq.getUsername())
-				.password(passwordEncoder.encode(userReq.getPassword())).role(Role.ADMIN).amountPaid(0.0).enable(true).build();
+				.password(passwordEncoder.encode(userReq.getPassword())).role(Role.ADMIN).amountPaid(0.0).enable(true)
+				.build();
 		return repository.save(user);
 	}
 
-	 public boolean adminExists() {
-		 return repository.existsByUsernameAndRole("admin", Role.ADMIN);
-	 }
-	
+	public boolean adminExists() {
+		return repository.existsByUsernameAndRole("admin", Role.ADMIN);
+	}
+
 	public AuthenticationResponse authenticate(AuthenticationRequest request) {
 
 		Optional<User> tempUser = repository.findByUsername(request.getUsername());
@@ -97,6 +98,10 @@ public class AuthenticationIplm implements AuthenticationService {
 		} else if (!tempUser.get().getEnable()) {
 			throw new AppException("Username not enable");
 		} else {
+			if (!passwordEncoder.matches(request.getPassword(), tempUser.get().getPassword())) {
+				throw new AppException("Incorrect password");
+			}
+
 			authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
@@ -105,7 +110,8 @@ public class AuthenticationIplm implements AuthenticationService {
 			var refreshToken = jwtService.generateRefreshToken(user);
 			revokeAllUserTokens(user);
 			saveUserToken(user, jwtToken);
-			return AuthenticationResponse.builder().accessToken(jwtToken).refreshToken(refreshToken).username(user.getUsername()).role(user.getRole()).build();
+			return AuthenticationResponse.builder().accessToken(jwtToken).refreshToken(refreshToken)
+					.username(user.getUsername()).role(user.getRole()).build();
 		}
 	}
 
@@ -152,9 +158,10 @@ public class AuthenticationIplm implements AuthenticationService {
 			verificationToken.setToken(token);
 			verificationRepo.save(verificationToken);
 			return verificationToken;
-		}				
+		}
 		return null;
 	}
+
 	public Verification ResendToken(String email) {
 		Verification verificationToken = verificationRepo.findVerificationTokenByUserEmail(email);
 		if (verificationToken != null) {
@@ -166,8 +173,8 @@ public class AuthenticationIplm implements AuthenticationService {
 			Optional<User> user = repository.findByEmail(email);
 			User userEmail = user.get();
 			String token = RandomStringUtils.randomAlphanumeric(6).toUpperCase();
-		    verificationToken = new Verification(userEmail, token);
-		    
+			verificationToken = new Verification(userEmail, token);
+
 			verificationRepo.save(verificationToken);
 			return verificationToken;
 		}
@@ -177,14 +184,15 @@ public class AuthenticationIplm implements AuthenticationService {
 		var user = repository.findByEmail(email);
 
 		if (user.isPresent()) {
-	        return user.get();
-	    } else {
-	        // Xử lý trường hợp không tìm thấy người dùng cho địa chỉ email đã cho
-	        // Bạn có thể ném ra một ngoại lệ, trả về một người dùng mặc định hoặc trả về null, phụ thuộc vào trường hợp sử dụng của bạn.
-	        // Ví dụ:
+			return user.get();
+		} else {
+			// Xử lý trường hợp không tìm thấy người dùng cho địa chỉ email đã cho
+			// Bạn có thể ném ra một ngoại lệ, trả về một người dùng mặc định hoặc trả về
+			// null, phụ thuộc vào trường hợp sử dụng của bạn.
+			// Ví dụ:
 //	        throw new NoSuchElementException("Không tìm thấy người dùng cho email: " + email);
-	    	return null;
-	    }
+			return null;
+		}
 	}
 
 	public User validatePasswordResetToken(String token, String email) {

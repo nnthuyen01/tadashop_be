@@ -79,8 +79,16 @@ public class VoucherController {
 		return new ResponseEntity<>(voucherService.getAllVouchers(), HttpStatus.OK);
 	}
 	
+	@GetMapping("/vouchers/user")
+	public ResponseEntity<?> getVouchersByUser(){
+		return new ResponseEntity<>(voucherService.getAllVouchersByUser(), HttpStatus.OK);
+	}
+	@GetMapping("/voucher/user/code")
+	public ResponseEntity<?> getVoucherByCode(@RequestParam("discountCode") String code){
+		return new ResponseEntity<>(voucherService.findByLikeCode(code), HttpStatus.OK);
+	}
 	@GetMapping("/vouchers/find")
-	public ResponseEntity<?> getBrands(@RequestParam("query") String query, 
+	public ResponseEntity<?> getVouchersByCode(@RequestParam("query") String query, 
 			@PageableDefault(size = 2, sort = "code", direction = Sort.Direction.ASC) Pageable pageable ) {
 		Page<Voucher> list = voucherService.findByCode(query, pageable);
 		
