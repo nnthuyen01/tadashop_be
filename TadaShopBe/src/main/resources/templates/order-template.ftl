@@ -48,13 +48,13 @@
 
             <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;">
                 <tr>
-                    <td align="center" valign="top" style="font-size:0; padding: 35px;" bgcolor="#F44336">
+                    <td align="center" valign="top" style="font-size:0; padding: 35px;" bgcolor="#dc0021">
 
                         <div style="display:inline-block; max-width:50%; min-width:100px; vertical-align:top; width:100%;">
                             <table align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:300px;">
                                 <tr>
                                     <td align="left" valign="top" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 36px; font-weight: 800; line-height: 48px;" class="mobile-center">
-                                        <h1 style="font-size: 36px; font-weight: 800; margin: 0; color: #ffffff;">TGDD</h1>
+                                        <h1 style="font-size: 36px; font-weight: 800; margin: 0; color: #ffffff;">TADA STORE</h1>
                                     </td>
                                 </tr>
                             </table>
@@ -67,10 +67,10 @@
                                         <table cellspacing="0" cellpadding="0" border="0" align="right">
                                             <tr>
                                                 <td style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400;">
-                                                    <p style="font-size: 18px; font-weight: 400; margin: 0; color: #ffffff;"><a href="#" target="_blank" style="color: #ffffff; text-decoration: none;">Shop &nbsp;</a></p>
+                                                    <p style="font-size: 18px; font-weight: 400; margin: 0; color: #ffffff;"><a href="#" target="_blank" style="color: #ffffff; text-decoration: none;">Website &nbsp;</a></p>
                                                 </td>
                                                 <td style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 24px;">
-                                                    <a href="#" target="_blank" style="color: #ffffff; text-decoration: none;"><img src="https://img.icons8.com/color/48/000000/small-business.png" width="27" height="23" style="display: block; border: 0px;"/></a>
+                                                    <a href="https://www.facebook.com/profile.php?id=61553976411130" target="_blank" style="color: #ffffff; text-decoration: none;"><img src="https://res.cloudinary.com/thuyen2k1/image/upload/v1701497905/FAVICON_fhpvnt.png" width="27" height="23" style="display: block; border: 0px;"/></a>
                                                 </td>
                                             </tr>
                                         </table>
@@ -88,7 +88,7 @@
                                 <td align="center" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 400; line-height: 24px; padding-top: 25px;">
                                     <img src="https://img.icons8.com/carbon-copy/100/000000/checked-checkbox.png" width="125" height="120" style="display: block; border: 0px;" /><br>
                                     <h2 style="font-size: 30px; font-weight: 800; line-height: 36px; color: #333333; margin: 0;">
-                                        Thank You For Your Order!
+                                        Cảm ơn bạn đã mua hàng!
                                     </h2>
                                 </td>
                             </tr>
@@ -104,7 +104,7 @@
                                     <table cellspacing="0" cellpadding="0" border="0" width="100%">
                                         <tr>
                                             <td width="75%" align="left" bgcolor="#eeeeee" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px;">
-                                                Order Confirmation #
+                                                Xác nhận đơn hàng #
                                             </td>
                                             <td width="25%" align="left" bgcolor="#eeeeee" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px;">
                                                 ${orderId}
@@ -128,10 +128,10 @@
                                     <table cellspacing="0" cellpadding="0" border="0" width="100%">
                                         <tr>
                                             <td width="75%" align="left" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px; border-top: 3px solid #eeeeee; border-bottom: 3px solid #eeeeee;">
-                                                TOTAL
+                                                Tổng cộng
                                             </td>
                                             <td width="25%" align="left" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px; border-top: 3px solid #eeeeee; border-bottom: 3px solid #eeeeee;">
-                                                ${total}
+                                                ${total} vnđ
                                             </td>
                                         </tr>
                                     </table>
@@ -151,35 +151,36 @@
                                         <table align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:300px;">
                                             <tr>
                                                 <td align="left" valign="top" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 400; line-height: 24px;">
-                                                    <p style="font-weight: 800;">Delivery Address</p>
+                                                    <p style="font-weight: 800;">Địa chỉ giao hàng</p>
                                                     <p>${deliveryAddress}</p>
 
                                                 </td>
                                             </tr>
                                         </table>
                                     </div>
-                                    <div style="display:inline-block; max-width:50%; min-width:240px; vertical-align:top; width:100%;">
+                                     <div style="display:inline-block; max-width:50%; min-width:240px; vertical-align:top; width:100%;">
                                         <table align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:300px;">
                                             <tr>
                                                 <td align="left" valign="top" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 400; line-height: 24px;">
-                                                    <p style="font-weight: 800;">Estimated Delivery Date</p>
-                                                    <p>${deliveryDate}</p>
+                                                    <p style="font-weight: 800;">Hình thức thanh toán</p>
+                                                    <p>${payment}</p>
                                                 </td>
                                             </tr>
                                         </table>
                                     </div>
+                                   
                                 </td>
                             </tr>
                         </table>
                     </td>
                 </tr>
                 <tr>
-                    <td align="center" style=" padding: 35px; background-color: #ff7361;" bgcolor="#1b9ba3">
+                    <td align="center" style=" padding: 35px; background-color: #f3442d;" bgcolor="#1b9ba3">
                         <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;">
                             <tr>
                                 <td align="center" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 400; line-height: 24px; padding-top: 25px;">
                                     <h2 style="font-size: 24px; font-weight: 800; line-height: 30px; color: #ffffff; margin: 0;">
-                                        Get 30% off your next order.
+                                        Mua hàng thêm nữa để được nhận ưu đãi 
                                     </h2>
                                 </td>
                             </tr>
@@ -188,7 +189,7 @@
                                     <table border="0" cellspacing="0" cellpadding="0">
                                         <tr>
                                             <td align="center" style="border-radius: 5px;" bgcolor="#66b3b7">
-                                                <a href="#" target="_blank" style="font-size: 18px; font-family: Open Sans, Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; border-radius: 5px; background-color: #F44336; padding: 15px 30px; border: 1px solid #F44336; display: block;">Shop Again</a>
+                                                <a href="http://localhost:3002/" target="_blank" style="font-size: 18px; font-family: Open Sans, Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; border-radius: 5px; background-color: #dc0021; padding: 15px 30px; border: 1px solid #dc0021; display: block;">Tiếp tục mua</a>
                                             </td>
                                         </tr>
                                     </table>
@@ -204,7 +205,7 @@
                             <tr>
                                 <td align="left" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 400; line-height: 24px;">
                                     <p style="font-size: 14px; font-weight: 400; line-height: 20px; color: #777777;">
-                                        If you didn't create an account using this email address, please ignore this email or <a href="#" target="_blank" style="color: #777777;">unsusbscribe</a>.
+                                        Nếu bạn không tạo tài khoản bằng địa chỉ email này, vui lòng bỏ qua email này hoặc <a href="#" target="_blank" style="color: #777777;">hủy đăng ký</a>.
                                     </p>
                                 </td>
                             </tr>

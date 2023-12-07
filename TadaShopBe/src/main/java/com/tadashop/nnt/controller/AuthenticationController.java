@@ -26,7 +26,6 @@ import com.tadashop.nnt.dto.PasswordDto;
 import com.tadashop.nnt.dto.UserReq;
 import com.tadashop.nnt.model.User;
 import com.tadashop.nnt.model.Verification;
-import com.tadashop.nnt.repository.BrandRepo;
 import com.tadashop.nnt.repository.UserRepo;
 import com.tadashop.nnt.service.AuthenticationService;
 import com.tadashop.nnt.service.email.EmailSenderService;
@@ -55,10 +54,10 @@ public class AuthenticationController {
 	@Autowired
 	private UserRepo repository;
 
-	final String TITLE_SUBJECT_EMAIL = "TADA Register TOKEN";
-	final String TYPE_REGIS = "confirm registration code";
-	final String RESET_PASSWORD_TOKEN = "Reset Password Token";
-	final String TYPE_RESET = "confirm password change code";
+	final String TITLE_SUBJECT_EMAIL = "Mã xác nhận đăng ký";
+	final String TYPE_REGIS = "xác nhận mã đăng ký";
+	final String RESET_PASSWORD_TOKEN = "Đặt lại mật khẩu";
+	final String TYPE_RESET = "xác nhận thay đổi mật khẩu";
 
 	@Autowired
 	MapValidationErrorService mapValidationErrorService;

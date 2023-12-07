@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tadashop.nnt.dto.OrderDetailResp;
 import com.tadashop.nnt.exception.AppException;
 import com.tadashop.nnt.model.Order;
 import com.tadashop.nnt.model.Product;
@@ -36,9 +38,14 @@ import com.tadashop.nnt.repository.ProductRepo;
 import com.tadashop.nnt.repository.SizeRepo;
 import com.tadashop.nnt.repository.UserRepo;
 import com.tadashop.nnt.repository.VoucherRepo;
+import com.tadashop.nnt.service.OrderService;
+import com.tadashop.nnt.service.email.EmailSenderService;
 import com.tadashop.nnt.utils.Utils;
+import com.tadashop.nnt.utils.constant.EmailType;
 
+import freemarker.template.TemplateException;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -57,12 +64,16 @@ public class PaymentOrderController {
 	    private UserRepo userRepo;
 	 @Autowired
 	    private VoucherRepo voucherRepo;
+	 @Autowired
+	 	private EmailSenderService emailSenderService;
+	 @Autowired
+	 private OrderService orderService;
 	@GetMapping("/payment-callback")
 	public void paymentCallback(@RequestParam Map<String, String> queryParams, HttpServletResponse response)
-			throws IOException {
+			throws MessagingException, TemplateException, IOException {
 		String vnp_ResponseCode = queryParams.get("vnp_ResponseCode");
 		String contractId = queryParams.get("contractId");
-		
+		AtomicBoolean mail = new AtomicBoolean(false);
 		if (contractId != null && !contractId.equals("")) {
 			if ("00".equals(vnp_ResponseCode)) {
 				// Giao dịch thành công
@@ -89,8 +100,6 @@ public class PaymentOrderController {
 							
 							// set total amount user
 							User user = order.getOrderUser();
-//							Long userId = Utils.getIdCurrentUser();
-//							User user = userRepo.getReferenceById(userId);
 							user.setAmountPaid(order.getTotalPrice() + user.getAmountPaid());
 							userRepo.save(user);
 
@@ -111,13 +120,34 @@ public class PaymentOrderController {
 								voucherRepo.save(voucher);
 								}
 							}
+							 mail.set(true);
 						} else {
+							mail.set(false);
 							throw new AppException("Not enough stock for product: " + sizeProduct.getId());
 						}
 					});
-
+				
+				
 				
 				orderRepo.save(order);
+				if(mail.get()==true) {
+					OrderDetailResp order1 = orderService.findByIdOrder(order.getId());
+					Map<String, Object> model = new HashMap<>();
+					model.put("title", "Mua hàng thành công");
+					model.put("orderId", order1.getOrder().getId());
+					model.put("payment", order1.getOrder().getPayment().getName());
+					Map<String, String> items = new HashMap<>();
+
+					order1.getItems().stream().forEach(item -> {
+						items.put(String.format("%s <b>(x%s)</br>", item.getItemName(), item.getQuantity()),
+								String.valueOf(item.getTotalPrice()));
+					});
+					model.put("items", items);
+					model.put("total", order1.getOrder().getTotalPrice());
+					model.put("deliveryAddress", order1.getOrder().getDeliveryAddress());
+					model.put("subject", "Cảm ơn bạn đã mua hàng!");
+					emailSenderService.sendEmail(order1.getOrder().getOrderUser().getEmail(), model, EmailType.ORDER);
+				}
 				response.sendRedirect(String.format("http://localhost:3002/checkout/%d/thankyou", contractIdLong));
 			} else {
 				// Giao dịch thất bại

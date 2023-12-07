@@ -2,7 +2,9 @@ package com.tadashop.nnt.service.iplm;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.validator.GenericValidator;
@@ -34,7 +36,9 @@ import com.tadashop.nnt.repository.UserRepo;
 import com.tadashop.nnt.repository.VoucherRepo;
 import com.tadashop.nnt.service.OrderService;
 import com.tadashop.nnt.service.SizeService;
+import com.tadashop.nnt.service.email.EmailSenderService;
 import com.tadashop.nnt.utils.Utils;
+import com.tadashop.nnt.utils.constant.EmailType;
 import com.tadashop.nnt.utils.constant.StateOrderConstant;
 
 import jakarta.transaction.Transactional;
@@ -63,6 +67,7 @@ public class OrderIplm implements OrderService {
 	OrderDetailRepo orderDetailRepo;
 	@Autowired
 	SizeService sizeService;
+	
 
 	Double price = (double) 0;
 	int totalQuantity = 0;
@@ -280,8 +285,7 @@ public class OrderIplm implements OrderService {
 						voucher.setVoucher(code);
 						voucherRepo.save(voucher);
 						}
-					}
-
+					}					
 				} else {
 					throw new AppException("Not enough stock for product: " + sizeProduct.getId());
 				}

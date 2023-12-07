@@ -124,8 +124,9 @@
             <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                 <tr>
                     <td align="center" valign="top" style="padding: 36px 24px;">
-                        <a href="https://www.facebook.com/TadaNNT/" target="_blank" style="display: inline-block;">
-                            <img src="https://ih1.redbubble.net/image.4766189832.3005/poster,504x498,f8f8f8-pad,600x600,f8f8f8.jpg" alt="Logo"
+                        <a href="https://www.facebook.com/profile.php?id=61553976411130" target="_blank" style="display: inline-block;">
+                            <img src="https://res.cloudinary.com/thuyen2k1/image/upload/v1701497905/FAVICON_fhpvnt.png" alt="Logo"
+                            
                                  border="0" width="48"
                                  style="display: block; width: 48px; max-width: 48px; min-width: 48px;">
                         </a>
@@ -155,7 +156,7 @@
                         style="padding: 36px 24px 0; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; border-top: 3px solid #d4dadf;">
                         <h1 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 48px;">${title}</h1>
                         <p style="margin: 0;">
-                        <h3>SHOP TADA FOOTBALL</h3></p>
+                        <h3>TADA STORE</h3></p>
                     </td>
                 </tr>
             </table>
@@ -182,7 +183,7 @@
                 <tr>
                     <td align="left" bgcolor="#ffffff"
                         style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
-                        <p style="margin: 0;">To verify your email address, please use the following One Time Password
+                        <p style="margin: 0;">Để xác minh địa chỉ email của bạn, vui lòng sử dụng mã một lần sau
                             (OTP):
                         </p>
                         <h2>${token}</h2>
@@ -194,11 +195,11 @@
                 <tr>
                     <td align="left" bgcolor="#ffffff"
                         style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
-                        <p style="margin: 0;">Do not share this OTP with anyone. TADA SHOP takes your account
-                            security very seriously. TADA SHOP Customer Service will never ask you to disclose or
-                            verify your TADA SHOP password, OTP, credit card, or banking account number. If you
-                            receive a suspicious email with a link to update your account information, do not click on
-                            the link—instead, report the email to TADA SHOP for investigation. Thank you!</p>
+                        <p style="margin: 0;">Không chia sẻ OTP này với bất kỳ ai. TADA SHOP lấy tài khoản của bạn
+                            an ninh rất nghiêm túc. Bộ phận Dịch vụ Khách hàng của TADA SHOP sẽ không bao giờ yêu cầu bạn tiết lộ hoặc
+                            xác minh mật khẩu TADA SHOP, OTP, thẻ tín dụng hoặc số tài khoản ngân hàng của bạn. nếu bạn
+                            nhận được email đáng ngờ có liên kết cập nhật thông tin tài khoản của bạn, đừng nhấp vào
+                            liên kết—thay vào đó, hãy báo cáo email cho TADA SHOP để điều tra. Xin cảm ơn!</p>
                     </td>
                 </tr>
                 <!-- end copy -->
@@ -207,7 +208,7 @@
                 <tr>
                     <td align="left" bgcolor="#ffffff"
                         style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; border-bottom: 3px solid #d4dadf">
-                        <p style="margin: 0;">Cheers,<br> TADA SHOP Team</p>
+                        <p style="margin: 0;">Trân trọng,<br> TADA SHOP Team</p>
                     </td>
                 </tr>
                 <!-- end copy -->
@@ -236,9 +237,9 @@
                 <tr>
                     <td align="center" bgcolor="#e9ecef"
                         style="padding: 12px 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; color: #666;">
-                        <p style="margin: 0;">You received this email because we received a request for ${type_of_action}
-                            for your account. If you didn't request ${type_of_action} you can safely delete this
-                            email.</p>
+                        <p style="margin: 0;">Bạn nhận được email này vì chúng tôi đã nhận được yêu cầu ${type_of_action}
+                            cho tài khoản của bạn. Nếu bạn không yêu cầu ${type_of_action} thì bạn có thể xóa nội dung này một cách an toàn
+                            e-mail.</p>
                     </td>
                 </tr>
                 <!-- end permission -->
@@ -247,9 +248,9 @@
                 <tr>
                     <td align="center" bgcolor="#e9ecef"
                         style="padding: 12px 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; color: #666;">
-                        <p style="margin: 0;">To stop receiving these emails, you can <a
-                                    href="https://www.blogdesire.com" target="_blank">unsubscribe</a> at any time.</p>
-                        <p style="margin: 0;">No 1 Vo Van Ngan Street, Linh Chieu Ward, Thu Duc District, Ho Chi Minh City</p>
+                        <p style="margin: 0;">Để ngừng nhận những email này, bạn có thể <a
+                                    href="https://www.blogdesire.com" target="_blank">hủy đăng ký</a> bất cứ lúc nào.</p>
+                        <p style="margin: 0;">Số 1 Võ Văn Ngân, phường Linh Chiểu, thành phố Thủ Đức, thành phố Hồ Chí Minh</p>
                     </td>
                 </tr>
                 <!-- end unsubscribe -->

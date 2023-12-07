@@ -29,4 +29,10 @@ public interface ProductService {
 
 	List<ProductBriefDto> getProductsByQueryName(String name);
 	
+	List<ProductBriefDto> getProductsRelate(Long id);
+	
+
+	
+	Page<ProductBriefDto> getProductFilters(List<String> brand, List<String> kitType,List<String> gender, Double minPrice, Double maxPrice, Pageable pageable);
+	
 }

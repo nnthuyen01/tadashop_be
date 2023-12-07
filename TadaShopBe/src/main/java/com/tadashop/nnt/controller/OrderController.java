@@ -1,5 +1,7 @@
 package com.tadashop.nnt.controller;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,7 +31,12 @@ import com.tadashop.nnt.dto.OrderReq;
 import com.tadashop.nnt.model.Brand;
 import com.tadashop.nnt.model.Order;
 import com.tadashop.nnt.service.OrderService;
+import com.tadashop.nnt.service.email.EmailSenderService;
+import com.tadashop.nnt.utils.constant.EmailType;
 
+import ch.qos.logback.core.model.Model;
+import freemarker.template.TemplateException;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -39,6 +46,7 @@ import lombok.RequiredArgsConstructor;
 public class OrderController {
 
 	private final OrderService orderService;
+	private final EmailSenderService emailSenderService;
 
 	@PostMapping("/order")
 	public ResponseEntity<?> create(@RequestBody OrderReq orderReq) {
@@ -62,7 +70,7 @@ public class OrderController {
 		List<Order> newList = list.stream().map(item -> {
 			Order dto = new Order();
 			BeanUtils.copyProperties(item, dto);
-			 dto.setState(item.getStateValue());
+			dto.setState(item.getStateValue());
 			return dto;
 		}).collect(Collectors.toList());
 
@@ -147,13 +155,35 @@ public class OrderController {
 
 	@PreAuthorize("hasAuthority('admin:update')")
 	@PutMapping("/admin/updateStatus/{id}")
-	public ResponseEntity<?> updateStatusOrders(@PathVariable Long id, @RequestBody Map<String, Integer> request) {
+	public ResponseEntity<?> updateStatusOrders(@PathVariable Long id, @RequestBody Map<String, Integer> request)
+			throws MessagingException, TemplateException, IOException {
 		int status = request.get("status");
 		Order orderUpdate = orderService.updateStatusOrder(id, status);
 		if (orderUpdate != null) {
+			OrderDetailResp order = orderService.findByIdOrder(id);
+
+			if (status == 5 || status == 2) {
+				Map<String, Object> model = new HashMap<>();
+				model.put("title", "Mua hàng thành công");
+				model.put("orderId", order.getOrder().getId());
+				model.put("payment", order.getOrder().getPayment().getName());
+				Map<String, String> items = new HashMap<>();
+
+				order.getItems().stream().forEach(item -> {
+					items.put(String.format("%s <b>(x%s)</br>", item.getItemName(), item.getQuantity()),
+							String.valueOf(item.getTotalPrice()));
+				});
+				model.put("items", items);
+				model.put("total", order.getOrder().getTotalPrice());
+				model.put("deliveryAddress", order.getOrder().getDeliveryAddress());
+				model.put("subject", "Cảm ơn bạn đã mua hàng!");
+				emailSenderService.sendEmail(order.getOrder().getOrderUser().getEmail(), model, EmailType.ORDER);
+			}
+
 			return new ResponseEntity<>("success", HttpStatus.OK);
 		} else
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(new ResponseEntity<>("ID order not FOUND", HttpStatus.OK));
 	}
+
 }

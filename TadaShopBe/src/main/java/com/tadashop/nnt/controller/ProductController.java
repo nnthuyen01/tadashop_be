@@ -1,5 +1,7 @@
 package com.tadashop.nnt.controller;
 
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +52,7 @@ public class ProductController {
 
 	@Autowired
 	MapValidationErrorService mapValidationErrorService;
-	
+
 	@PreAuthorize("hasAuthority('admin:create')")
 	@PostMapping("/admin/product")
 	public ResponseEntity<?> createProduct(@Valid @RequestBody ProductDto dto, BindingResult result) {
@@ -63,8 +65,7 @@ public class ProductController {
 		var savedDto = productService.insertProduct(dto);
 		return new ResponseEntity<>(savedDto, HttpStatus.CREATED);
 	}
-	
-	
+
 	@PreAuthorize("hasAuthority('admin:update')")
 	@PatchMapping(value = "/admin/product/{id}")
 	public ResponseEntity<?> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductDto dto,
@@ -76,7 +77,7 @@ public class ProductController {
 			return responseEntity;
 		}
 		var updateDto = productService.updateProduct(id, dto);
-		
+
 		return new ResponseEntity<>(updateDto, HttpStatus.CREATED);
 	}
 
@@ -101,13 +102,11 @@ public class ProductController {
 
 		return new ResponseEntity<>(dto, HttpStatus.CREATED);
 	}
-	
+
 	@GetMapping("/products/list")
 	public ResponseEntity<?> getProducts() {
 		return new ResponseEntity<>(productService.getProducts(), HttpStatus.OK);
 	}
-
-	
 
 	@GetMapping("/products/images/{filename:.+}")
 	public ResponseEntity<?> downloadFile(@PathVariable String filename, HttpServletRequest request) {
@@ -135,46 +134,60 @@ public class ProductController {
 				.body(resource);
 	}
 
-	
 	@DeleteMapping("/product/{id}")
-	public ResponseEntity<?> deleteProductById(@PathVariable Long id){
+	public ResponseEntity<?> deleteProductById(@PathVariable Long id) {
 		productService.deleteProductById(id);
-		
-		return new ResponseEntity<>("Product with ID: " + id + " was deleted",HttpStatus.OK);
+
+		return new ResponseEntity<>("Product with ID: " + id + " was deleted", HttpStatus.OK);
 	}
-	
+
 	@DeleteMapping("/product/images/{filename:.+}")
-	public ResponseEntity<?> deleteImage(@PathVariable String filename){
+	public ResponseEntity<?> deleteImage(@PathVariable String filename) {
 		fileStorageService.deleteProductImageFile(filename);
-		
+
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+
 	@GetMapping("/product/{id}/getedit")
 	public ResponseEntity<?> getEditedProduct(@PathVariable Long id) {
 		return new ResponseEntity<>(productService.getEditedProductById(id), HttpStatus.OK);
 	}
-	
+
 	@Operation(summary = "get product by ID")
-    @GetMapping("/product/detail/{id}")
-    public ResponseEntity<?> getProductById(@PathVariable Long id){
-        ProductDetailResp productResp = productService.findProductById(id);
-        if (productResp !=null){
-            return new ResponseEntity<>(productResp, HttpStatus.OK);
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body("Not Found Product ID");
+	@GetMapping("/product/detail/{id}")
+	public ResponseEntity<?> getProductById(@PathVariable Long id) {
+		ProductDetailResp productResp = productService.findProductById(id);
+		if (productResp != null) {
+			return new ResponseEntity<>(productResp, HttpStatus.OK);
+		}
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found Product ID");
 //		return new ResponseEntity<>(productService.findProductById(id), HttpStatus.OK);
-    }
-	
+	}
+
 	@GetMapping("/products/findLeague")
 	public ResponseEntity<?> getProductByleague(@RequestParam("query") String query,
 			@PageableDefault(size = 2, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
 
 		return new ResponseEntity<>(productService.getProductByLeague(query, pageable), HttpStatus.OK);
 	}
+
 	@GetMapping("/products/list/queryName")
 	public ResponseEntity<?> getProductsByQueryname(@RequestParam("query") String query) {
 		return new ResponseEntity<>(productService.getProductsByQueryName(query), HttpStatus.OK);
 	}
 
+	@GetMapping("/products/list/relate/{id}")
+	public ResponseEntity<?> getProductsRelate(@PathVariable Long id) {
+		return new ResponseEntity<>(productService.getProductsRelate(id), HttpStatus.OK);
+	}
+
+
+
+	@GetMapping("/products/listFilter")
+	public ResponseEntity<?> getProductsFilter(@RequestParam(value = "brand", required = false) List<String> brand,
+			@RequestParam(value = "kitType", required = false) List<String> kitType, @RequestParam(value = "gender", required = false) List<String> gender,
+			@RequestParam("minPrice") Optional<Double> minPrice, @RequestParam("maxPrice") Optional<Double> maxPrice,
+			@PageableDefault(size = 20, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
+		return new ResponseEntity<>(productService.getProductFilters(brand,kitType,gender,minPrice.orElse(null),maxPrice.orElse(null),pageable), HttpStatus.OK);
+	}
 }

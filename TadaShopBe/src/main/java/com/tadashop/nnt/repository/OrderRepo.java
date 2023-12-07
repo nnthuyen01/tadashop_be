@@ -29,7 +29,7 @@ public interface OrderRepo extends JpaRepository<Order, Long> {
 	@Query("SELECT o FROM Order o WHERE o.orderUser.id = :userId")
 	List<Order> findByUserId(@Param("userId") Long userId);
 
-//	List<Order> findByOrderUser(User orderUser);
+
 	Page<Order> findByOrderUser(User orderUser, Pageable page);
 
 	@Query("select count(o) from Order o where o.state = 'Paid' and o.createTime>=:day")
