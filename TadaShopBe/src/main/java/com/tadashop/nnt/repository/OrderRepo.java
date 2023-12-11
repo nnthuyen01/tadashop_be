@@ -31,14 +31,20 @@ public interface OrderRepo extends JpaRepository<Order, Long> {
 
 
 	Page<Order> findByOrderUser(User orderUser, Pageable page);
-
+	
+	@Query("select count(o) from Order o where o.state = 'Paid' or o.state = 'Complete' ")
+	Long countAllOrderPayment();
+	
 	@Query("select count(o) from Order o where o.state = 'Paid' and o.createTime>=:day")
 	Long countAllTimeGreaterThanEqual(LocalDateTime day);
+	
+	@Query("select count(o) from Order o where (o.state = 'Paid' or o.state = 'Complete') and o.createTime >= :startOfDay and o.createTime <= :endOfDay")
+	Long countAllTimeEqual(@Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
 
-	@Query("select SUM(o.totalPrice) from Order o where o.createTime >= :date")
-	Double totalRevenue(LocalDateTime date);
+	@Query("select coalesce(SUM(o.totalPrice), 0) from Order o where (o.state = 'Paid' or o.state = 'Complete') and o.createTime >= :startOfDay and o.createTime <= :endOfDay")
+	Double totalRevenue(@Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
 
-	@Query("select SUM(o.totalPrice) from Order o")
+	@Query("select coalesce(SUM(o.totalPrice), 0) from Order o where o.state = 'Paid' or o.state = 'Complete'")
 	Double totalAllRevenue();
 
 	List<Order> findByState(StateOrderConstant state);

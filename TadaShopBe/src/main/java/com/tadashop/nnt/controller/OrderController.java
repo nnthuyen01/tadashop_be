@@ -54,14 +54,14 @@ public class OrderController {
 		return new ResponseEntity<>(orderService.createOrder(orderReq), HttpStatus.OK);
 	}
 
-	// Chua -> pass
+	
 	@PreAuthorize("hasAuthority('admin:read')")
 	@GetMapping("/admin/orders")
 	public ResponseEntity<?> getAllOrders() {
 		return new ResponseEntity<>(orderService.getAllOrders(), HttpStatus.OK);
 	}
 
-	// Chua -> pass
+	
 	@PreAuthorize("hasAuthority('admin:read')")
 	@GetMapping("/admin/orders/page")
 	public ResponseEntity<?> getOrders(
@@ -78,7 +78,7 @@ public class OrderController {
 		return new ResponseEntity<>(newPage, HttpStatus.OK);
 	}
 
-	// Chua -> tam pass
+	
 	@PreAuthorize("hasAuthority('admin:read')")
 	@GetMapping("/admin/statusOrder")
 	public ResponseEntity<?> getStatePageables(@RequestParam("state") String state,
@@ -96,13 +96,13 @@ public class OrderController {
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 
-	// Chua -> pass
+
 	@GetMapping("/orderUser/orders")
 	public ResponseEntity<?> getAllOrdersByUser() {
 		return new ResponseEntity<>(orderService.getAllOrdersByUser(), HttpStatus.OK);
 	}
 
-	// Chua -> Pass
+	
 	@PreAuthorize("hasAuthority('admin:read')")
 	@GetMapping("/admin/orders/page/{userId}")
 	public ResponseEntity<?> getOrderByUserIdPageables(@PathVariable final Long userId,
@@ -120,7 +120,7 @@ public class OrderController {
 		return new ResponseEntity<>(newPage, HttpStatus.OK);
 	}
 
-	// Chua -> pass
+	
 
 	@GetMapping("/orderDetail/{orderId}")
 	public ResponseEntity<?> getOrderById(@PathVariable Long orderId) {
@@ -184,6 +184,19 @@ public class OrderController {
 		} else
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(new ResponseEntity<>("ID order not FOUND", HttpStatus.OK));
+	}
+	
+	@PreAuthorize("hasAuthority('admin:read')")
+	@GetMapping("/admin/statistic")
+	public ResponseEntity<?> getStatistic() {
+		return new ResponseEntity<>(orderService.getStatistic(), HttpStatus.OK);
+	}
+	
+	@PreAuthorize("hasAuthority('admin:read')")
+	@GetMapping("/admin/chart")
+	public ResponseEntity<?> getRevenueByDateInMonth(@RequestParam(defaultValue = "0") int month,
+			@RequestParam(defaultValue = "0") int year) {
+		return new ResponseEntity<>(orderService.getRevenueByDateInMonth(month, year), HttpStatus.OK);
 	}
 
 }

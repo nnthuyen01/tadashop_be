@@ -6,8 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.tadashop.nnt.dto.MonthlyRevenueResp;
 import com.tadashop.nnt.dto.OrderDetailResp;
 import com.tadashop.nnt.dto.OrderReq;
+import com.tadashop.nnt.dto.StatisticResp;
 import com.tadashop.nnt.model.Order;
 
 
@@ -34,4 +36,8 @@ public interface OrderService {
 	List<Order> getOrderByStatus(int status);
 	
 	Order updateStatusOrder(Long orderId, int status);
+	
+	StatisticResp getStatistic();
+	
+	List<MonthlyRevenueResp> getRevenueByDateInMonth(int month, int year);
 }

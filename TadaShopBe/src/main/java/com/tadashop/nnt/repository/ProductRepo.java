@@ -31,7 +31,7 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
 	Page<Product> findByFilters(@Param("brand") List<String> brand, @Param("kitType") List<String> kitType,
 			@Param("gender") List<String> gender, @Param("minPrice") Double minPrice, @Param("maxPrice") Double maxPrice, Pageable pageable);
 
-
+	
 	
 	
 }

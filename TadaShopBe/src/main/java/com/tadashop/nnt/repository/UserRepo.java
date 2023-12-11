@@ -28,4 +28,7 @@ public interface UserRepo extends JpaRepository<User, Long> {
 	public User findByVerifyCode(@Param("verify") String verify);
 	
 	Page<User> findByUsernameContainsIgnoreCase(String username,Pageable pageable);
+	
+	@Query("select coalesce(count(u), 0) from User u where u.role = 'USER'")
+	Long getQuantityUser();
 }

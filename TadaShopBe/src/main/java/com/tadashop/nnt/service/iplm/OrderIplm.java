@@ -1,10 +1,12 @@
 package com.tadashop.nnt.service.iplm;
 
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.validator.GenericValidator;
@@ -14,8 +16,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.tadashop.nnt.dto.MonthlyRevenueResp;
 import com.tadashop.nnt.dto.OrderDetailResp;
 import com.tadashop.nnt.dto.OrderReq;
+import com.tadashop.nnt.dto.StatisticResp;
 import com.tadashop.nnt.exception.AppException;
 import com.tadashop.nnt.model.Cart;
 import com.tadashop.nnt.model.Order;
@@ -67,7 +71,6 @@ public class OrderIplm implements OrderService {
 	OrderDetailRepo orderDetailRepo;
 	@Autowired
 	SizeService sizeService;
-	
 
 	Double price = (double) 0;
 	int totalQuantity = 0;
@@ -206,15 +209,18 @@ public class OrderIplm implements OrderService {
 
 	public Long countOrderByDay(int day, int month, int year) {
 		if (day == 0 && month == 0 && year == 0) {
-			return orderRepo.count();
+			return orderRepo.countAllOrderPayment();
 		}
 		if (!GenericValidator.isDate(year + "-" + month + "-" + day, "yyyy-MM-dd", false))
 			throw new AppException("Wrong day");
 
-		LocalDateTime date = LocalDateTime.of(year, month, day, 0, 0, 0);
+//		LocalDateTime date = LocalDateTime.of(year, month, day, 0, 0, 0);
 
-		return orderRepo.countAllTimeGreaterThanEqual(date);
+		LocalDateTime startOfDay = LocalDateTime.of(year, month, day, 0, 0, 0);
+		LocalDateTime endOfDay = LocalDateTime.of(year, month, day, 23, 59, 59);
 
+//		return orderRepo.countAllTimeGreaterThanEqual(date);
+		return orderRepo.countAllTimeEqual(startOfDay, endOfDay);
 	}
 
 	public Double countRevenueByDay(int day, int month, int year) {
@@ -224,9 +230,11 @@ public class OrderIplm implements OrderService {
 		if (!GenericValidator.isDate(year + "-" + month + "-" + day, "yyyy-MM-dd", false))
 			throw new AppException("Wrong day");
 
-		LocalDateTime date = LocalDateTime.of(year, month, day, 0, 0, 0);
+//		LocalDateTime date = LocalDateTime.of(year, month, day, 0, 0, 0);
+		LocalDateTime startOfDay = LocalDateTime.of(year, month, day, 0, 0, 0);
+		LocalDateTime endOfDay = LocalDateTime.of(year, month, day, 23, 59, 59);
 
-		return orderRepo.totalRevenue(date);
+		return orderRepo.totalRevenue(startOfDay, endOfDay);
 	}
 
 	public List<Order> getOrderByStatus(int status) {
@@ -275,17 +283,17 @@ public class OrderIplm implements OrderService {
 					int temp = (int) (amountPaid / 500000);
 					if (temp > numberOfVouchers) {
 						int loop = temp - numberOfVouchers;
-						for (int i = 1; i <= loop; i ++ ) {
-						Voucher voucher = new Voucher();
-						voucher.setUser(user);
-						voucher.setPriceOffPercent(10);
-						voucher.setStatus(1);
-						String randomPart = RandomStringUtils.randomAlphanumeric(4).toUpperCase();
-						String code = "TADA" + randomPart;
-						voucher.setVoucher(code);
-						voucherRepo.save(voucher);
+						for (int i = 1; i <= loop; i++) {
+							Voucher voucher = new Voucher();
+							voucher.setUser(user);
+							voucher.setPriceOffPercent(10);
+							voucher.setStatus(1);
+							String randomPart = RandomStringUtils.randomAlphanumeric(4).toUpperCase();
+							String code = "TADA" + randomPart;
+							voucher.setVoucher(code);
+							voucherRepo.save(voucher);
 						}
-					}					
+					}
 				} else {
 					throw new AppException("Not enough stock for product: " + sizeProduct.getId());
 				}
@@ -295,6 +303,46 @@ public class OrderIplm implements OrderService {
 		orderUpdate.setState(status);
 		orderRepo.save(orderUpdate);
 		return orderUpdate;
+	}
+
+	public StatisticResp getStatistic() {
+		StatisticResp newStatistic = new StatisticResp();
+		newStatistic.setQuantityUser(userRepo.getQuantityUser());
+		newStatistic.setTotalRevenue(orderRepo.totalAllRevenue());
+		Long quantityProduct = productRepo.count();
+		newStatistic.setQuantityProduct(Objects.requireNonNullElse(quantityProduct, 0L));
+		return newStatistic;
+	}
+	
+	public List<MonthlyRevenueResp> getRevenueByDateInMonth(int month, int year){
+		  List<MonthlyRevenueResp> list = new ArrayList<>();
+		    
+		  // Check if the month and year are valid
+	        if (month < 1 || month > 12 || year < 1) {
+	            // Handle invalid input, throw an exception, or return an error response
+	            throw new IllegalArgumentException("Invalid month or year");
+	        }
+		  
+	        // Determine the number of days in the given month and year
+	        YearMonth yearMonth = YearMonth.of(year, month);
+	        int daysInMonth = yearMonth.lengthOfMonth();
+	        
+		
+	        for (int dayOfMonth = 1; dayOfMonth <= daysInMonth; dayOfMonth++) {
+	                   	            
+	            // Placeholder logic: create a MonthlyRevenueResp object and add it to the list
+	            MonthlyRevenueResp monthlyRevenue = new MonthlyRevenueResp();
+	            monthlyRevenue.setDate(dayOfMonth);
+	            
+	            // Set your total revenue logic here
+	        	LocalDateTime startOfDay = LocalDateTime.of(year, month, dayOfMonth, 0, 0, 0);
+	    		LocalDateTime endOfDay = LocalDateTime.of(year, month, dayOfMonth, 23, 59, 59);	    		
+	            monthlyRevenue.setTotalRevenue(orderRepo.totalRevenue(startOfDay, endOfDay));
+
+	            list.add(monthlyRevenue);
+	        }
+
+		return list;
 	}
 
 }
