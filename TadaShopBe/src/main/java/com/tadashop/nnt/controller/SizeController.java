@@ -2,6 +2,9 @@ package com.tadashop.nnt.controller;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,11 +17,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
 import com.tadashop.nnt.dto.SizeDto;
-
+import com.tadashop.nnt.dto.SizeResp;
 import com.tadashop.nnt.model.Size;
 
 import com.tadashop.nnt.service.SizeService;
@@ -35,6 +39,23 @@ public class SizeController {
 	@Autowired
 	MapValidationErrorService mapValidationErrorService;
 	
+//	@PreAuthorize("hasAuthority('admin:create')")
+//	@PostMapping("/admin/size")
+//	public ResponseEntity<?> createSize(@Valid @RequestBody SizeDto dto,
+//											BindingResult result) {
+//		ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationFields(result);
+//		
+//		if (responseEntity != null) {
+//			return responseEntity;
+//		}
+//		
+//		Size entity = sizeService.saveSize(dto);
+//		
+//		dto.setId(entity.getId());
+//		
+//		return new ResponseEntity<>(dto, HttpStatus.CREATED);
+//	}
+	
 	@PreAuthorize("hasAuthority('admin:create')")
 	@PostMapping("/admin/size")
 	public ResponseEntity<?> createSize(@Valid @RequestBody SizeDto dto,
@@ -45,13 +66,24 @@ public class SizeController {
 			return responseEntity;
 		}
 		
-		Size entity = sizeService.saveSize(dto);
+		SizeResp entity = sizeService.saveSize1(dto);
 		
-		dto.setId(entity.getId());
-		
-		return new ResponseEntity<>(dto, HttpStatus.CREATED);
+		return new ResponseEntity<>(entity, HttpStatus.CREATED);
 	}
 	
+//	@PreAuthorize("hasAuthority('admin:update')")
+//	@PatchMapping("admin/size/{id}")
+//	public ResponseEntity<?> updateSize(@PathVariable Long id, @Valid @RequestBody SizeDto dto, BindingResult result) {
+//		System.out.println("update product");
+//		ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationFields(result);
+//
+//		if (responseEntity != null) {
+//			return responseEntity;
+//		}
+//		var updateDto = sizeService.updateSize(id, dto);
+//		
+//		return new ResponseEntity<>(updateDto, HttpStatus.CREATED);
+//	}
 	
 	@PreAuthorize("hasAuthority('admin:update')")
 	@PatchMapping("admin/size/{id}")
@@ -62,11 +94,10 @@ public class SizeController {
 		if (responseEntity != null) {
 			return responseEntity;
 		}
-		var updateDto = sizeService.updateSize(id, dto);
+		var resp = sizeService.updateSize1(id, dto);
 		
-		return new ResponseEntity<>(updateDto, HttpStatus.CREATED);
+		return new ResponseEntity<>(resp, HttpStatus.CREATED);
 	}
-	
 	
 	@DeleteMapping("/size/{id}")
 	public ResponseEntity<?> deleteSize(@PathVariable Long id) {
@@ -83,6 +114,11 @@ public class SizeController {
 	@GetMapping("/size/all")
 	public ResponseEntity<?> findAll() {
 		return new ResponseEntity<>(sizeService.findAll(), HttpStatus.OK);
+	}
+	@GetMapping("/size/allPageable")
+	public ResponseEntity<?> findAllPageable(@RequestParam("query") String size,
+			@PageableDefault(size = 5, sort = "product", direction = Sort.Direction.ASC) Pageable pageable) {
+		return new ResponseEntity<>(sizeService.findAllByQuerySize(size, pageable), HttpStatus.OK);
 	}
 	
 	@GetMapping("/size/all/{id}")

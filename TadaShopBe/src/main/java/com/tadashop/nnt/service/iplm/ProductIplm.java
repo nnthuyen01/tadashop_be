@@ -50,17 +50,10 @@ public class ProductIplm implements ProductService {
 	public ProductDto insertProduct(ProductDto dto) {
 
 		Product entity = new Product();
-
-		dto.setTotalQuantity(entity.getTotalQuantity());
-
+		
 		BeanUtils.copyProperties(dto, entity);
-
-		Double priceOff = Math.ceil((dto.getOriginalPrice() * (100 - dto.getDiscount())) / 100 / 1000) * 1000; // Làm
-																												// tròn
-																												// lên
-																												// đến
-																												// hàng
-																												// ngàn
+		entity.setTotalQuantity(0);
+		Double priceOff = Math.ceil((dto.getOriginalPrice() * (100 - dto.getDiscount())) / 100 / 1000) * 1000; // Làm tròn lên đén hàng ngàn
 		entity.setPriceAfterDiscount(priceOff);
 
 		var club = new Club();

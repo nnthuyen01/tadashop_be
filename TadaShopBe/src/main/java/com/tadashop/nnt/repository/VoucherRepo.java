@@ -1,4 +1,4 @@
-package com.tadashop.nnt.repository;
+package com.tadashop.nnt.repository; 
 
 import java.util.List;
 
@@ -28,4 +28,7 @@ public interface VoucherRepo extends JpaRepository<Voucher, Long>{
 	
 	@Query(value = "SELECT * FROM voucher WHERE user_id = :idUser", nativeQuery = true)
 	List<Voucher> findByIdUserNativeQuery(@Param("idUser") Long idUser);
+	
+	@Query("SELECT v FROM Voucher v WHERE lower(v.code) like lower(concat('%', :query, '%')) or lower(v.user.username) like lower(concat('%', :query, '%'))")
+	Page<Voucher> findByCodeOrUsernameContainsIgnoreCase(@Param("query") String query, Pageable pageable);
 }

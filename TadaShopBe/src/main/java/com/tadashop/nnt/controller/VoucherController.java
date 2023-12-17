@@ -44,24 +44,24 @@ public class VoucherController {
 	@PostMapping("/admin/voucher")
 	public ResponseEntity<?> createVoucher(@RequestBody VoucherDto dto) {
 		
-		Voucher entity = new Voucher();
-
-		entity = voucherService.createVoucher(dto);
+//		Voucher entity = new Voucher();
+//
+//		entity = voucherService.createVoucher(dto);
 		
 //		dto.setId(entity.getId());
 		
-		return new ResponseEntity<>(entity, HttpStatus.CREATED);
+		return new ResponseEntity<>(voucherService.createVoucher1(dto), HttpStatus.CREATED);
 	}
 	
 	@PreAuthorize("hasAuthority('admin:update')")
 	@PutMapping("/admin/voucher")
 	public ResponseEntity<?> updateVoucher(@RequestBody VoucherDto dto) {
-		Voucher entity = new Voucher();
-		entity = voucherService.updateVoucher(dto);
+//		Voucher entity = new Voucher();
+//		entity = voucherService.updateVoucher(dto);
 		
 //		dto.setId(entity.getId());
 		
-		return new ResponseEntity<>(entity, HttpStatus.CREATED);
+		return new ResponseEntity<>(voucherService.updateVoucher1(dto), HttpStatus.CREATED);
 	}
 	@GetMapping("/voucher/{id}/get")
 	public ResponseEntity<?> getVouchers(@PathVariable("id") Long id){
@@ -77,6 +77,12 @@ public class VoucherController {
 	@GetMapping("/vouchers")
 	public ResponseEntity<?> getVouchers(){
 		return new ResponseEntity<>(voucherService.getAllVouchers(), HttpStatus.OK);
+	}
+	
+	@GetMapping("/vouchersHaveUsername")
+	public ResponseEntity<?> getVouchersHaveUsername(@RequestParam("query") String query,
+			@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable){
+		return new ResponseEntity<>(voucherService.getAllVouchersHaveUsername(query, pageable), HttpStatus.OK);
 	}
 	
 	@GetMapping("/vouchers/user")

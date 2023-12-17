@@ -54,14 +54,12 @@ public class OrderController {
 		return new ResponseEntity<>(orderService.createOrder(orderReq), HttpStatus.OK);
 	}
 
-	
 	@PreAuthorize("hasAuthority('admin:read')")
 	@GetMapping("/admin/orders")
 	public ResponseEntity<?> getAllOrders() {
 		return new ResponseEntity<>(orderService.getAllOrders(), HttpStatus.OK);
 	}
 
-	
 	@PreAuthorize("hasAuthority('admin:read')")
 	@GetMapping("/admin/orders/page")
 	public ResponseEntity<?> getOrders(
@@ -78,7 +76,6 @@ public class OrderController {
 		return new ResponseEntity<>(newPage, HttpStatus.OK);
 	}
 
-	
 	@PreAuthorize("hasAuthority('admin:read')")
 	@GetMapping("/admin/statusOrder")
 	public ResponseEntity<?> getStatePageables(@RequestParam("state") String state,
@@ -96,13 +93,11 @@ public class OrderController {
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 
-
 	@GetMapping("/orderUser/orders")
 	public ResponseEntity<?> getAllOrdersByUser() {
 		return new ResponseEntity<>(orderService.getAllOrdersByUser(), HttpStatus.OK);
 	}
 
-	
 	@PreAuthorize("hasAuthority('admin:read')")
 	@GetMapping("/admin/orders/page/{userId}")
 	public ResponseEntity<?> getOrderByUserIdPageables(@PathVariable final Long userId,
@@ -119,8 +114,6 @@ public class OrderController {
 
 		return new ResponseEntity<>(newPage, HttpStatus.OK);
 	}
-
-	
 
 	@GetMapping("/orderDetail/{orderId}")
 	public ResponseEntity<?> getOrderById(@PathVariable Long orderId) {
@@ -185,13 +178,13 @@ public class OrderController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(new ResponseEntity<>("ID order not FOUND", HttpStatus.OK));
 	}
-	
+
 	@PreAuthorize("hasAuthority('admin:read')")
 	@GetMapping("/admin/statistic")
 	public ResponseEntity<?> getStatistic() {
 		return new ResponseEntity<>(orderService.getStatistic(), HttpStatus.OK);
 	}
-	
+
 	@PreAuthorize("hasAuthority('admin:read')")
 	@GetMapping("/admin/chart")
 	public ResponseEntity<?> getRevenueByDateInMonth(@RequestParam(defaultValue = "0") int month,
@@ -199,4 +192,27 @@ public class OrderController {
 		return new ResponseEntity<>(orderService.getRevenueByDateInMonth(month, year), HttpStatus.OK);
 	}
 
+	//////
+
+	@PreAuthorize("hasAuthority('admin:read')")
+	@GetMapping("/admin/order/count-orderRange")
+	public ResponseEntity<?> getNumberOrderByRangeDay(@RequestParam(defaultValue = "0") int sday,
+			@RequestParam(defaultValue = "0") int smonth, @RequestParam(defaultValue = "0") int syear,
+			@RequestParam(defaultValue = "0") int eday, @RequestParam(defaultValue = "0") int emonth,
+			@RequestParam(defaultValue = "0") int eyear) {
+
+		return new ResponseEntity<>(orderService.countOrderByRangeDay(sday, smonth, syear, eday, emonth, eyear),
+				HttpStatus.OK);
+	}
+
+	@PreAuthorize("hasAuthority('admin:read')")
+	@GetMapping("/admin/order/count-revenueRange")
+	public ResponseEntity<?> getRevenueByRangeDay(@RequestParam(defaultValue = "0") int sday,
+			@RequestParam(defaultValue = "0") int smonth, @RequestParam(defaultValue = "0") int syear,
+			@RequestParam(defaultValue = "0") int eday, @RequestParam(defaultValue = "0") int emonth,
+			@RequestParam(defaultValue = "0") int eyear) {
+		return new ResponseEntity<>(orderService.countRevenueByRangeDay(sday, smonth, syear, eday, emonth, eyear),
+				HttpStatus.OK);
+
+	}
 }

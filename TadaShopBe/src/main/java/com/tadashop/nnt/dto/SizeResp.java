@@ -14,6 +14,8 @@ public class SizeResp implements Serializable{
 	private String size;
 	
 	private Long productId;
+	
+	private String productName;
 
 	
 }

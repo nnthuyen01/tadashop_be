@@ -313,36 +313,73 @@ public class OrderIplm implements OrderService {
 		newStatistic.setQuantityProduct(Objects.requireNonNullElse(quantityProduct, 0L));
 		return newStatistic;
 	}
-	
-	public List<MonthlyRevenueResp> getRevenueByDateInMonth(int month, int year){
-		  List<MonthlyRevenueResp> list = new ArrayList<>();
-		    
-		  // Check if the month and year are valid
-	        if (month < 1 || month > 12 || year < 1) {
-	            // Handle invalid input, throw an exception, or return an error response
-	            throw new IllegalArgumentException("Invalid month or year");
-	        }
-		  
-	        // Determine the number of days in the given month and year
-	        YearMonth yearMonth = YearMonth.of(year, month);
-	        int daysInMonth = yearMonth.lengthOfMonth();
-	        
-		
-	        for (int dayOfMonth = 1; dayOfMonth <= daysInMonth; dayOfMonth++) {
-	                   	            
-	            // Placeholder logic: create a MonthlyRevenueResp object and add it to the list
-	            MonthlyRevenueResp monthlyRevenue = new MonthlyRevenueResp();
-	            monthlyRevenue.setDate(dayOfMonth);
-	            
-	            // Set your total revenue logic here
-	        	LocalDateTime startOfDay = LocalDateTime.of(year, month, dayOfMonth, 0, 0, 0);
-	    		LocalDateTime endOfDay = LocalDateTime.of(year, month, dayOfMonth, 23, 59, 59);	    		
-	            monthlyRevenue.setTotalRevenue(orderRepo.totalRevenue(startOfDay, endOfDay));
 
-	            list.add(monthlyRevenue);
-	        }
+	public List<MonthlyRevenueResp> getRevenueByDateInMonth(int month, int year) {
+		List<MonthlyRevenueResp> list = new ArrayList<>();
+
+		// Check if the month and year are valid
+		if (month < 1 || month > 12 || year < 1) {
+			// Handle invalid input, throw an exception, or return an error response
+			throw new IllegalArgumentException("Invalid month or year");
+		}
+
+		// Determine the number of days in the given month and year
+		YearMonth yearMonth = YearMonth.of(year, month);
+		int daysInMonth = yearMonth.lengthOfMonth();
+
+		for (int dayOfMonth = 1; dayOfMonth <= daysInMonth; dayOfMonth++) {
+
+			// Placeholder logic: create a MonthlyRevenueResp object and add it to the list
+			MonthlyRevenueResp monthlyRevenue = new MonthlyRevenueResp();
+			monthlyRevenue.setDate(dayOfMonth);
+
+			// Set your total revenue logic here
+			LocalDateTime startOfDay = LocalDateTime.of(year, month, dayOfMonth, 0, 0, 0);
+			LocalDateTime endOfDay = LocalDateTime.of(year, month, dayOfMonth, 23, 59, 59);
+			monthlyRevenue.setTotalRevenue(orderRepo.totalRevenue(startOfDay, endOfDay));
+
+			list.add(monthlyRevenue);
+		}
 
 		return list;
+	}
+
+	boolean isValidDate(String date, String format) {
+		return GenericValidator.isDate(date, format, false);
+	}
+
+	public Long countOrderByRangeDay(int sday, int smonth, int syear, int eday, int emonth, int eyear) {
+		if (sday == 0 && smonth == 0 && syear == 0 && eday == 0 && emonth == 0 && eyear == 0) {
+			return orderRepo.countAllOrderPayment();
+		}
+		String startDateString = syear + "-" + smonth + "-" + sday;
+		String endDateString = eyear + "-" + emonth + "-" + eday;
+
+		if (!isValidDate(startDateString, "yyyy-MM-dd") || !isValidDate(endDateString, "yyyy-MM-dd")) {
+			throw new AppException("Invalid date format");
+		}
+
+		LocalDateTime startOfDay = LocalDateTime.of(syear, smonth, sday, 0, 0, 0);
+		LocalDateTime endOfDay = LocalDateTime.of(eyear, emonth, eday, 23, 59, 59);
+
+		return orderRepo.countAllTimeEqual(startOfDay, endOfDay);
+	}
+
+	public Double countRevenueByRangeDay(int sday, int smonth, int syear, int eday, int emonth, int eyear) {
+		if (sday == 0 && smonth == 0 && syear == 0 && eday == 0 && emonth == 0 && eyear == 0) {
+			return orderRepo.totalAllRevenue();
+		}
+		String startDateString = syear + "-" + smonth + "-" + sday;
+		String endDateString = eyear + "-" + emonth + "-" + eday;
+
+		if (!isValidDate(startDateString, "yyyy-MM-dd") || !isValidDate(endDateString, "yyyy-MM-dd")) {
+			throw new AppException("Invalid date format");
+		}
+
+		LocalDateTime startOfDay = LocalDateTime.of(syear, smonth, sday, 0, 0, 0);
+		LocalDateTime endOfDay = LocalDateTime.of(eyear, emonth, eday, 23, 59, 59);
+
+		return orderRepo.totalRevenue(startOfDay, endOfDay);
 	}
 
 }
