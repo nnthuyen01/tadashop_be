@@ -32,6 +32,12 @@ public class ClubIplm implements ClubService {
 
 	public Club save(ClubDto dto) {
 
+		List<?> foundedList = clubRepository.findByNameIgnoreCase(dto.getName());
+
+		if (foundedList.size() > 0) {
+			throw new AppException("Club name is existed");
+		}
+
 		Club entity = new Club();
 		BeanUtils.copyProperties(dto, entity);
 		var league = leagueRepository.getReferenceById(dto.getLeagueId());
@@ -71,22 +77,22 @@ public class ClubIplm implements ClubService {
 	public List<ClubResp> findAll() {
 		List<Club> clubs = clubRepository.findAll();
 		List<ClubResp> clubResps = new ArrayList<>();
-		
-		 for (Club club : clubs) {
-		        ClubResp clubResp = new ClubResp();
-		        LeagueDto leagueDto = new LeagueDto();
-		        
-		        // Set properties of clubResp from club
-		        clubResp.setId(club.getId());
-		        clubResp.setName(club.getName());
-		        // Set other properties as needed
-		    	leagueDto.setId(club.getLeague().getId());
-				leagueDto.setName(club.getLeague().getName());
-				clubResp.setLeague(leagueDto);
-				
-				  // Add clubResp to the list
-			    clubResps.add(clubResp);
-		 }
+
+		for (Club club : clubs) {
+			ClubResp clubResp = new ClubResp();
+			LeagueDto leagueDto = new LeagueDto();
+
+			// Set properties of clubResp from club
+			clubResp.setId(club.getId());
+			clubResp.setName(club.getName());
+			// Set other properties as needed
+			leagueDto.setId(club.getLeague().getId());
+			leagueDto.setName(club.getLeague().getName());
+			clubResp.setLeague(leagueDto);
+
+			// Add clubResp to the list
+			clubResps.add(clubResp);
+		}
 
 		return clubResps;
 	}

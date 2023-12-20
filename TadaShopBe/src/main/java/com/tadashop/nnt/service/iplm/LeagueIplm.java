@@ -19,6 +19,12 @@ public class LeagueIplm implements LeagueService {
 	private LeagueRepo leagueRepository;
 
 	public League save(League entity) {
+		List<?> foundedList = leagueRepository.findByNameIgnoreCase(entity.getName());
+
+		if (foundedList.size() > 0) {
+			throw new AppException("League name is existed");
+		}
+
 		return leagueRepository.save(entity);
 	}
 
@@ -41,24 +47,24 @@ public class LeagueIplm implements LeagueService {
 	public List<League> findAll() {
 		return leagueRepository.findAll();
 	}
-	
+
 	public Page<League> findAll(Pageable pageable) {
 		return leagueRepository.findAll(pageable);
 	}
-	
+
 	public League findById(Long id) {
-		Optional<League> found =  leagueRepository.findById(id);
-		
-		if(found.isEmpty()) {
+		Optional<League> found = leagueRepository.findById(id);
+
+		if (found.isEmpty()) {
 			throw new AppException("League with id " + id + " does not exist");
 		}
-		
+
 		return found.get();
 	}
-	
+
 	public void deleteById(Long id) {
 		League existed = findById(id);
-		
+
 		leagueRepository.delete(existed);
 	}
 }

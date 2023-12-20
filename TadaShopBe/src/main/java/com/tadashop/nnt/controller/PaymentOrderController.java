@@ -81,7 +81,7 @@ public class PaymentOrderController {
 				int Id = Integer.parseInt(queryParams.get("contractId"));
 				Long contractIdLong = Long.valueOf(Id);
 				Order order = orderRepo.findById(contractIdLong)
-						.orElseThrow(() -> new AppException("Không tồn tại hợp đồng này của sinh viên"));
+						.orElseThrow(() -> new AppException("Không tồn tại đơn hàng này"));
 				order.setState(5);
 			
 				order.getOrderDetails().stream().forEach(orderDetail -> {
@@ -151,6 +151,12 @@ public class PaymentOrderController {
 				response.sendRedirect(String.format("http://localhost:3002/checkout/%d/thankyou", contractIdLong));
 			} else {
 				// Giao dịch thất bại
+				int Id = Integer.parseInt(queryParams.get("contractId"));
+				Long contractIdLong = Long.valueOf(Id);
+				Order order = orderRepo.findById(contractIdLong)
+						.orElseThrow(() -> new AppException("Không tồn tại đơn hàng này"));
+				order.setState(3);
+				orderRepo.save(order);
 				// Thực hiện các xử lý cần thiết, ví dụ: không cập nhật CSDL\
 				response.sendRedirect("http://localhost:3002/payment-fail");
 
