@@ -89,7 +89,7 @@ public class ProductIplm implements ProductService {
 				.orElseThrow(() -> new AppException("Product with id " + id + " Not Found"));
 
 		// copy thanh phan nhung truong khong can copy
-		String ignoreFields[] = new String[] { "createdDate", "image", "images", "viewCount" };
+		String ignoreFields[] = new String[] { "createdDate", "image", "images", "viewCount", "totalQuantity" };
 		BeanUtils.copyProperties(dto, found, ignoreFields);
 
 		Double priceOff = Math.ceil((dto.getOriginalPrice() * (100 - dto.getDiscount())) / 100 / 1000) * 1000; // Làm
@@ -104,7 +104,7 @@ public class ProductIplm implements ProductService {
 		BeanUtils.copyProperties(dto.getImage(), imgUpdate);
 		productImageRepository.save(imgUpdate);
 		System.out.print("INEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE" + dto.getImage().getId());
-//		if(dto.getImage().getId() != null && found.getImage().getId()!=dto.getImage().getId()) {
+
 		if (imgUpdate.getId() != null && found.getImage().getId() != imgUpdate.getId()) {
 			fileStorageService.deleteProductImageFile(found.getImage().getFileName());
 

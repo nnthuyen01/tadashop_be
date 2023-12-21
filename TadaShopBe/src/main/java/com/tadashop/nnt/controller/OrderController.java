@@ -63,7 +63,7 @@ public class OrderController {
 	@PreAuthorize("hasAuthority('admin:read')")
 	@GetMapping("/admin/orders/page")
 	public ResponseEntity<?> getOrders(
-			@PageableDefault(size = 5, sort = "createTime", direction = Sort.Direction.ASC) Pageable pageable) {
+			@PageableDefault(size = 5, sort = "createTime", direction = Sort.Direction.DESC) Pageable pageable) {
 		Page<Order> list = orderService.findAllOrder(pageable);
 		List<Order> newList = list.stream().map(item -> {
 			Order dto = new Order();
@@ -79,7 +79,7 @@ public class OrderController {
 	@PreAuthorize("hasAuthority('admin:read')")
 	@GetMapping("/admin/statusOrder")
 	public ResponseEntity<?> getStatePageables(@RequestParam("state") String state,
-			@PageableDefault(size = 5, sort = "state", direction = Sort.Direction.ASC) Pageable pageable) {
+			@PageableDefault(size = 5, sort = "state", direction = Sort.Direction.DESC) Pageable pageable) {
 		Page<Order> list = orderService.searchOrder(state, pageable);
 
 ////		List<Order> newList = list.getContent().stream().map(item -> {

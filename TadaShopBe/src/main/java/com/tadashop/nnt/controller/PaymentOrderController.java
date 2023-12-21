@@ -1,4 +1,5 @@
 package com.tadashop.nnt.controller;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -54,20 +55,21 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @SecurityRequirement(name = "AUTHORIZATION")
 public class PaymentOrderController {
-	 @Autowired
-	    private OrderRepo orderRepo;
-	 @Autowired
-	    private ProductRepo productRepo;
-	 @Autowired
-	    private SizeRepo sizeRepo;
-	 @Autowired
-	    private UserRepo userRepo;
-	 @Autowired
-	    private VoucherRepo voucherRepo;
-	 @Autowired
-	 	private EmailSenderService emailSenderService;
-	 @Autowired
-	 private OrderService orderService;
+	@Autowired
+	private OrderRepo orderRepo;
+	@Autowired
+	private ProductRepo productRepo;
+	@Autowired
+	private SizeRepo sizeRepo;
+	@Autowired
+	private UserRepo userRepo;
+	@Autowired
+	private VoucherRepo voucherRepo;
+	@Autowired
+	private EmailSenderService emailSenderService;
+	@Autowired
+	private OrderService orderService;
+
 	@GetMapping("/payment-callback")
 	public void paymentCallback(@RequestParam Map<String, String> queryParams, HttpServletResponse response)
 			throws MessagingException, TemplateException, IOException {
@@ -83,21 +85,22 @@ public class PaymentOrderController {
 				Order order = orderRepo.findById(contractIdLong)
 						.orElseThrow(() -> new AppException("Không tồn tại đơn hàng này"));
 				order.setState(5);
-			
+				final boolean[] isFirstIteration = { true };
 				order.getOrderDetails().stream().forEach(orderDetail -> {
-						Size sizeProduct = orderDetail.getSize();
+					Size sizeProduct = orderDetail.getSize();
 
-						Product product = sizeProduct.getProduct();
-						int quantityInOrder = orderDetail.getQuantity();
+					Product product = sizeProduct.getProduct();
+					int quantityInOrder = orderDetail.getQuantity();
 
-						// Kiểm tra và trừ số lượng sản phẩm trong kho
-						if (sizeProduct.getQuantity() >= quantityInOrder) {
-							sizeProduct.setQuantity(sizeProduct.getQuantity() - quantityInOrder);
-							product.setTotalQuantity(product.getTotalQuantity() - quantityInOrder);
-							// Cập nhật thông tin sản phẩm trong kho
-							productRepo.save(product);
-							sizeRepo.save(sizeProduct);
-							
+					// Kiểm tra và trừ số lượng sản phẩm trong kho
+					if (sizeProduct.getQuantity() >= quantityInOrder) {
+						sizeProduct.setQuantity(sizeProduct.getQuantity() - quantityInOrder);
+						product.setTotalQuantity(product.getTotalQuantity() - quantityInOrder);
+						// Cập nhật thông tin sản phẩm trong kho
+						productRepo.save(product);
+						sizeRepo.save(sizeProduct);
+
+						if (isFirstIteration[0]) {
 							// set total amount user
 							User user = order.getOrderUser();
 							user.setAmountPaid(order.getTotalPrice() + user.getAmountPaid());
@@ -109,28 +112,29 @@ public class PaymentOrderController {
 							int temp = (int) (amountPaid / 500000);
 							if (temp > numberOfVouchers) {
 								int loop = temp - numberOfVouchers;
-								for (int i = 1; i <= loop; i ++ ) {
-								Voucher voucher = new Voucher();
-								voucher.setUser(user);
-								voucher.setPriceOffPercent(10);
-								voucher.setStatus(1);
-								String randomPart = RandomStringUtils.randomAlphanumeric(4).toUpperCase();
-								String code = "TADA" + randomPart;
-								voucher.setVoucher(code);
-								voucherRepo.save(voucher);
+								for (int i = 1; i <= loop; i++) {
+									Voucher voucher = new Voucher();
+									voucher.setUser(user);
+									voucher.setPriceOffPercent(10);
+									voucher.setStatus(1);
+									String randomPart = RandomStringUtils.randomAlphanumeric(4).toUpperCase();
+									String code = "TADA" + randomPart;
+									voucher.setVoucher(code);
+									voucherRepo.save(voucher);
 								}
 							}
-							 mail.set(true);
-						} else {
-							mail.set(false);
-							throw new AppException("Not enough stock for product: " + sizeProduct.getId());
+							// Set the flag to false after the first iteration
+							isFirstIteration[0] = false;
 						}
-					});
-				
-				
-				
+						mail.set(true);
+					} else {
+						mail.set(false);
+						throw new AppException("Not enough stock for product: " + sizeProduct.getId());
+					}
+				});
+
 				orderRepo.save(order);
-				if(mail.get()==true) {
+				if (mail.get() == true) {
 					OrderDetailResp order1 = orderService.findByIdOrder(order.getId());
 					Map<String, Object> model = new HashMap<>();
 					model.put("title", "Mua hàng thành công");
@@ -161,7 +165,7 @@ public class PaymentOrderController {
 				response.sendRedirect("http://localhost:3002/payment-fail");
 
 			}
-		}		
+		}
 
 	}
 

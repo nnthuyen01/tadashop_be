@@ -257,6 +257,7 @@ public class OrderIplm implements OrderService {
 
 		// Tru so luong san pham he thong
 		if (status == 5 || status == 2) {
+			final boolean[] isFirstIteration = { true }; // Array with a single element
 			orderUpdate.getOrderDetails().stream().forEach(orderDetail -> {
 				Size sizeProduct = orderDetail.getSize();
 
@@ -270,30 +271,34 @@ public class OrderIplm implements OrderService {
 					// Cập nhật thông tin sản phẩm trong kho
 					productRepo.save(product);
 					sizeRepo.save(sizeProduct);
-					// set total amount user
-					User user = orderUpdate.getOrderUser();
-//					Long userId = Utils.getIdCurrentUser();
-//					User user = userRepo.getReferenceById(userId);
-					user.setAmountPaid(orderUpdate.getTotalPrice() + user.getAmountPaid());
-					userRepo.save(user);
 
-					List<Voucher> vouchers = user.getVouchers();
-					int numberOfVouchers = vouchers.size();
-					double amountPaid = user.getAmountPaid();
-					int temp = (int) (amountPaid / 500000);
-					if (temp > numberOfVouchers) {
-						int loop = temp - numberOfVouchers;
-						for (int i = 1; i <= loop; i++) {
-							Voucher voucher = new Voucher();
-							voucher.setUser(user);
-							voucher.setPriceOffPercent(10);
-							voucher.setStatus(1);
-							String randomPart = RandomStringUtils.randomAlphanumeric(4).toUpperCase();
-							String code = "TADA" + randomPart;
-							voucher.setVoucher(code);
-							voucherRepo.save(voucher);
+					// set total amount user
+					if (isFirstIteration[0]) {
+						User user = orderUpdate.getOrderUser();
+						user.setAmountPaid(orderUpdate.getTotalPrice() + user.getAmountPaid());
+						userRepo.save(user);
+
+						List<Voucher> vouchers = user.getVouchers();
+						int numberOfVouchers = vouchers.size();
+						double amountPaid = user.getAmountPaid();
+						int temp = (int) (amountPaid / 500000);
+						if (temp > numberOfVouchers) {
+							int loop = temp - numberOfVouchers;
+							for (int i = 1; i <= loop; i++) {
+								Voucher voucher = new Voucher();
+								voucher.setUser(user);
+								voucher.setPriceOffPercent(10);
+								voucher.setStatus(1);
+								String randomPart = RandomStringUtils.randomAlphanumeric(4).toUpperCase();
+								String code = "TADA" + randomPart;
+								voucher.setVoucher(code);
+								voucherRepo.save(voucher);
+							}
 						}
+						// Set the flag to false after the first iteration
+						isFirstIteration[0] = false;
 					}
+
 				} else {
 					throw new AppException("Not enough stock for product: " + sizeProduct.getId());
 				}
