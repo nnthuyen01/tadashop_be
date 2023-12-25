@@ -156,7 +156,8 @@
                         style="padding: 36px 24px 0; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; border-top: 3px solid #d4dadf;">
                         <h1 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 48px;">${title}</h1>
                         <p style="margin: 0;">
-                        <h3>TADA STORE</h3></p>
+                        <h2>TADA STORE</h2></p>
+                        <h3>Tài khoản: ${username}</h3></p>
                     </td>
                 </tr>
             </table>

@@ -84,7 +84,7 @@ public class AuthenticationController {
 		model.put("title", TITLE_SUBJECT_EMAIL);
 		model.put("subject", TITLE_SUBJECT_EMAIL);
 		model.put("type_of_action", TYPE_REGIS);
-
+		model.put("username", user.getUsername());
 		emailSenderService.sendEmail(userReq.getEmail(), model, EmailType.REGISTER);
 
 		return new ResponseEntity<>(userReq, HttpStatus.CREATED);
@@ -94,11 +94,13 @@ public class AuthenticationController {
 	public ResponseEntity<?> resendVerificationToken(@RequestParam("email") String email)
 			throws MessagingException, TemplateException, IOException {
 		Verification verificationToken = service.ResendToken(email);
+		User user = service.findUserByEmail(email);
 		Map<String, Object> model = new HashMap<>();
 		model.put("token", verificationToken.getToken());
 		model.put("title", TITLE_SUBJECT_EMAIL);
 		model.put("subject", TITLE_SUBJECT_EMAIL);
 		model.put("type_of_action", TYPE_REGIS);
+		model.put("username", user.getUsername());
 		emailSenderService.sendEmail(email, model, EmailType.REGISTER);
 
 		return new ResponseEntity<>("Đã gửi lại mã xác nhận vào email", HttpStatus.OK);
@@ -153,7 +155,7 @@ public class AuthenticationController {
 			model.put("title", RESET_PASSWORD_TOKEN);
 			model.put("subject", RESET_PASSWORD_TOKEN);
 			model.put("type_of_action", TYPE_RESET);
-
+			model.put("username", user.getUsername());
 			// Send email
 			emailSenderService.sendEmail(user.getEmail(), model, EmailType.REGISTER);
 			log.info("Reset password: {}", token);

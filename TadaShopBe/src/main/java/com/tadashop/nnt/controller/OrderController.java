@@ -30,6 +30,8 @@ import com.tadashop.nnt.dto.OrderDetailResp;
 import com.tadashop.nnt.dto.OrderReq;
 import com.tadashop.nnt.model.Brand;
 import com.tadashop.nnt.model.Order;
+import com.tadashop.nnt.model.Voucher;
+import com.tadashop.nnt.repository.VoucherRepo;
 import com.tadashop.nnt.service.OrderService;
 import com.tadashop.nnt.service.email.EmailSenderService;
 import com.tadashop.nnt.utils.constant.EmailType;
@@ -47,7 +49,8 @@ public class OrderController {
 
 	private final OrderService orderService;
 	private final EmailSenderService emailSenderService;
-
+	private final VoucherRepo voucherRepo;
+	
 	@PostMapping("/order")
 	public ResponseEntity<?> create(@RequestBody OrderReq orderReq) {
 
@@ -160,11 +163,33 @@ public class OrderController {
 				model.put("title", "Mua hàng thành công");
 				model.put("orderId", order.getOrder().getId());
 				model.put("payment", order.getOrder().getPayment().getName());
+			
+				 // Check if there is a discount code
+			    String discountCode = order.getOrder().getDiscountCode();
+			    if (discountCode != null) {
+			        Voucher voucher = voucherRepo.findByCode(discountCode);
+			        model.put("discount", voucher.getPriceOffPercent());
+			    } else {
+			        model.put("discount", 0);
+			    }
+			    
+//				Map<String, String> items = new HashMap<>();
+//
+//				order.getItems().stream().forEach(item -> {
+//					items.put(String.format("%s <b>(x%s)</br>", item.getItemName(), item.getQuantity()),
+//							String.valueOf(item.getTotalPrice()));
+//				});
+//				model.put("items", items);
 				Map<String, String> items = new HashMap<>();
 
 				order.getItems().stream().forEach(item -> {
-					items.put(String.format("%s <b>(x%s)</br>", item.getItemName(), item.getQuantity()),
-							String.valueOf(item.getTotalPrice()));
+				    String itemName = item.getItemName();
+				    String quantity = String.valueOf(item.getQuantity());
+				    String totalPriceString = String.format("%,.0f", item.getTotalPrice());  // Định dạng số nguyên với dấu phẩy ngăn cách hàng nghìn
+				    String formattedItem = String.format("%s <b>(x%s)</br>", itemName, quantity);
+				    
+				    // Thêm vào Map
+				    items.put(formattedItem, totalPriceString);
 				});
 				model.put("items", items);
 				model.put("total", order.getOrder().getTotalPrice());

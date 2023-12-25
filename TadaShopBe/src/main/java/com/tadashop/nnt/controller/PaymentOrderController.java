@@ -140,12 +140,35 @@ public class PaymentOrderController {
 					model.put("title", "Mua hàng thành công");
 					model.put("orderId", order1.getOrder().getId());
 					model.put("payment", order1.getOrder().getPayment().getName());
+					
+					 // Check if there is a discount code
+				    String discountCode = order1.getOrder().getDiscountCode();
+				    if (discountCode != null) {
+				        Voucher voucher = voucherRepo.findByCode(discountCode);
+				        model.put("discount", voucher.getPriceOffPercent());
+				    } else {
+				        model.put("discount", 0);
+				    }
+					
+//					Map<String, String> items = new HashMap<>();
+//
+//					order1.getItems().stream().forEach(item -> {
+//						items.put(String.format("%s <b>(x%s)</br>", item.getItemName(), item.getQuantity()),
+//								String.valueOf(item.getTotalPrice()));
+//					});
+//					model.put("items", items);
 					Map<String, String> items = new HashMap<>();
 
 					order1.getItems().stream().forEach(item -> {
-						items.put(String.format("%s <b>(x%s)</br>", item.getItemName(), item.getQuantity()),
-								String.valueOf(item.getTotalPrice()));
+					    String itemName = item.getItemName();
+					    String quantity = String.valueOf(item.getQuantity());
+					    String totalPriceString = String.format("%,.0f", item.getTotalPrice());  // Định dạng số nguyên với dấu phẩy ngăn cách hàng nghìn
+					    String formattedItem = String.format("%s <b>(x%s)</br>", itemName, quantity);
+					    
+					    // Thêm vào Map
+					    items.put(formattedItem, totalPriceString);
 					});
+
 					model.put("items", items);
 					model.put("total", order1.getOrder().getTotalPrice());
 					model.put("deliveryAddress", order1.getOrder().getDeliveryAddress());
