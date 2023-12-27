@@ -44,11 +44,6 @@ public class VoucherController {
 	@PostMapping("/admin/voucher")
 	public ResponseEntity<?> createVoucher(@RequestBody VoucherDto dto) {
 		
-//		Voucher entity = new Voucher();
-//
-//		entity = voucherService.createVoucher(dto);
-		
-//		dto.setId(entity.getId());
 		
 		return new ResponseEntity<>(voucherService.createVoucher1(dto), HttpStatus.CREATED);
 	}

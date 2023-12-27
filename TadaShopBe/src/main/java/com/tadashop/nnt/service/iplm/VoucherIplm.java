@@ -168,8 +168,9 @@ public class VoucherIplm implements VoucherService {
 	}
 
 	public Voucher findByLikeCode(String code) {
-		Voucher voucher = voucherRepo.findByCode(code);
-//		return (voucher != null && voucher.getStatus() == 1);
+		Long userId = Utils.getIdCurrentUser();
+		Voucher voucher = voucherRepo.findByCodeAndUserIdOrAdminId(code, userId);
+		
 		if (voucher != null && voucher.getStatus() == 1) {
 			return voucher;
 		} else {

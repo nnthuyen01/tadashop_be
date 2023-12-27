@@ -17,6 +17,12 @@ public interface VoucherRepo extends JpaRepository<Voucher, Long>{
 	@Query("SELECT v FROM Voucher as v WHERE v.code = :code ")
 	Voucher findByCode(String code);
 	
+	Voucher findByCodeAndUser_Id(String code, Long userId);
+	
+	// Query to find a voucher by code associated with either the given user ID or admin ID (assuming admin ID is 1)
+    @Query("SELECT v FROM Voucher v WHERE v.code = :code AND (v.user.id = :userId OR v.user.id = 1)")
+    Voucher findByCodeAndUserIdOrAdminId(@Param("code") String code, @Param("userId") Long userId);
+	
 	@Query("SELECT v FROM Voucher as v WHERE v.code = :code ")
 	List<Voucher> findVouchersByCode(String code);
 	void deleteVoucherByCode(String code);
