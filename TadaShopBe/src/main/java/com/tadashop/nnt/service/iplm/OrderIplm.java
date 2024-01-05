@@ -158,6 +158,10 @@ public class OrderIplm implements OrderService {
 	public Page<Order> searchOrder(final String kt, Pageable pageable) {
 		return orderRepo.findByStateContaining(kt, pageable);
 	}
+	
+	public Page<Order> searchOrderbyUsername(String username, Pageable pageable){
+		return orderRepo.findByUsername(username, pageable);
+	}
 
 	public List<Order> getAllOrdersByUser() {
 

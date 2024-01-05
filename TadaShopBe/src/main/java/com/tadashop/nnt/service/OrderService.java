@@ -21,6 +21,8 @@ public interface OrderService {
 
 	Page<Order> searchOrder(final String state, Pageable pageable);
 
+	Page<Order> searchOrderbyUsername(String username, Pageable pageable);
+	
 	List<Order> getAllOrdersByUser();
 
 	Page<Order> getOrderHistory(final Long userId, Pageable pageable);

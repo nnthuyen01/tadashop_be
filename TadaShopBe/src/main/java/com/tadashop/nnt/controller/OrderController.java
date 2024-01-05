@@ -96,6 +96,22 @@ public class OrderController {
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 
+	@PreAuthorize("hasAuthority('admin:read')")
+	@GetMapping("/admin/ordersUsername/page")
+	public ResponseEntity<?> getOrders(@RequestParam("username") String username,
+			@PageableDefault(size = 5, sort = "createTime", direction = Sort.Direction.DESC) Pageable pageable) {
+		Page<Order> list = orderService.searchOrderbyUsername(username ,pageable);
+		List<Order> newList = list.stream().map(item -> {
+			Order dto = new Order();
+			BeanUtils.copyProperties(item, dto);
+			dto.setState(item.getStateValue());
+			return dto;
+		}).collect(Collectors.toList());
+
+		Page<Order> newPage = new PageImpl<Order>(newList, pageable, list.getTotalElements());
+		return new ResponseEntity<>(newPage, HttpStatus.OK);
+	}
+	
 	@GetMapping("/orderUser/orders")
 	public ResponseEntity<?> getAllOrdersByUser() {
 		return new ResponseEntity<>(orderService.getAllOrdersByUser(), HttpStatus.OK);

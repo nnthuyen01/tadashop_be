@@ -27,7 +27,10 @@ public interface UserRepo extends JpaRepository<User, Long> {
 	@Query(value = "select * from user where verification_code = :verify", nativeQuery = true)
 	public User findByVerifyCode(@Param("verify") String verify);
 	
-	Page<User> findByUsernameContainsIgnoreCase(String username,Pageable pageable);
+//	Page<User> findByUsernameContainsIgnoreCase(String username,Pageable pageable);
+	
+	@Query("SELECT u FROM User u WHERE lower(u.firstname) like lower(concat('%', :query, '%')) or lower(u.username) like lower(concat('%', :query, '%'))")
+	Page<User> findByUsernameContainsIgnoreCase(String query,Pageable pageable);
 	
 	@Query("select coalesce(count(u), 0) from User u where u.role = 'USER'")
 	Long getQuantityUser();

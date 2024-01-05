@@ -48,4 +48,7 @@ public interface OrderRepo extends JpaRepository<Order, Long> {
 	Double totalAllRevenue();
 
 	List<Order> findByState(StateOrderConstant state);
+	
+	@Query("SELECT o FROM Order o WHERE lower(o.orderUser.username) like lower(concat('%', :username, '%'))")
+	Page<Order> findByUsername(@Param("username") String username, Pageable pageable);
 }
